@@ -1,0 +1,25 @@
+name: Fire-Kingdom2
+version: 2.2BETA
+main: me.boykev.kingdom.Main
+author: boykev
+commands:
+  kd-selector:
+    description: Kingdom Selector Commando.
+  fire-kingdom:
+    description: Main base command.
+  kdsetspawn:
+    description: Main base command.
+  kdspawn:
+    description: Main base command.
+  setkingdom:
+    description: Main base command.
+  kd-kick:
+    description: Main base command.
+  check-kingdom:
+    description: Main base command.
+  kd-admin:
+    description: Main base command.
+  kd-invite:
+    description: Main base command.
+  kd-invitemanager:
+    description: Main base command.

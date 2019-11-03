@@ -1,5 +1,5 @@
 name: Fire-Kingdom2
-version: 2.2BETA
+version: 3.0
 main: me.boykev.kingdom.Main
 author: boykev
 commands:
@@ -12,8 +12,6 @@ commands:
   kdspawn:
     description: Main base command.
   setkingdom:
-    description: Main base command.
-  kd-kick:
     description: Main base command.
   check-kingdom:
     description: Main base command.

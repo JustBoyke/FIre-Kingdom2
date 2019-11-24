@@ -79,113 +79,32 @@ public class Main extends JavaPlugin implements Listener {
 		PluginManager pm = Bukkit.getPluginManager();
 		cm = new ConfigManager(this);
 		cm.LoadDefaults();
-		
-		if(cm.getConfig().getString("key").equals("-")) {
-			Bukkit.broadcastMessage(ChatColor.YELLOW + "The plugin is setting things up please lay back.....");
-			Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                @Override
-                public void run() {
-                	Bukkit.broadcastMessage(ChatColor.YELLOW + "Everything is fine, have fun using InkoopPlugin :)");
-                }
-            }, 100);
-			String serverid = Bukkit.getServer().getServerId();
-	    	int serverport = Bukkit.getServer().getPort();
-	    	String plname = "Fire-Kingdom";
-	    	String bukkitip = Bukkit.getServer().getIp();
-	    	try {
-	    		URL url = new URL("http://api.boykevanvugt.nl/keymanager.php?type=create&version=1&plname=" + plname + "&serverport=" + serverport);
-	            URLConnection connection = url.openConnection();
-	            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	            String text = in.readLine();
-	            String licfinal = text.replace(" ", "");
-	            cm.getConfig().set("key", licfinal);
-	            cm.save();
-	            in.close();
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-		}
-		if(!cm.getConfig().getString("key").equals("-")) {
-	    	String key = cm.getConfig().getString("key");
-	    	try {
-	            URL url = new URL("http://api.boykevanvugt.nl/keymanager.php?type=read&key=" + key);
-	            URLConnection connection = url.openConnection();
-	            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-	            String text = in.readLine();
-	            String licfinal = text.replace(" ", "");
-	            cm.getConfig().set("key", licfinal);
-	            if(licfinal.equals("valid")) {
-	            	this.Status = "Valid";
-	            	in.close();
-	            	
-	            	//initizlize Vault
-	            	if(Bukkit.getPluginManager().getPlugin("Vault") instanceof Vault)
-	            	{
-	            		RegisteredServiceProvider<Economy> service = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+		//initizlize Vault
+    	if(Bukkit.getPluginManager().getPlugin("Vault") instanceof Vault)
+    	{
+    		RegisteredServiceProvider<Economy> service = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
 
-	            		if(service != null)
-	            			economy = service.getProvider();
-	            	}
-	            	
-	            	
-	            	
-	            	
-	            	//Initialize Commands and Events
-					pm.registerEvents(this, this);
-					pm.registerEvents(new EventSystem(this), this);
-					pm.registerEvents(new KoningenSysteem(this), this);
-	            	getCommand("kd-selector").setExecutor(new CommandManager(this));
-	            	getCommand("kdspawn").setExecutor(new CommandManager(this));
-	            	getCommand("kdsetspawn").setExecutor(new CommandManager(this));
-	            	getCommand("setkingdom").setExecutor(new CommandManager(this));
-	            	getCommand("kd-kick").setExecutor(new CommandManager(this));
-	            	getCommand("check-kingdom").setExecutor(new CommandManager(this));
-	            	getCommand("kd-admin").setExecutor(new KoningenSysteem(this));
-	            	getCommand("kd-invite").setExecutor(new KoningenSysteem(this));
-	            	getCommand("kd-invitemanager").setExecutor(new KoningenSysteem(this));
-	    			return;
-	            }
-	            if(licfinal.equals("abuse")) {
-	            	Bukkit.broadcastMessage(ChatColor.YELLOW + "Deze server abused de InkoopPlugin!");
-	            	in.close();
-	            	pm.registerEvents(new JoinEvent(this), this);
-	            	this.Status = "Abuse";
-	            	Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-	                    @Override
-	                    public void run() {
-	                    	Bukkit.broadcastMessage(ChatColor.DARK_RED+ "Je maakt misbruik van de Fire-Kingdom, neem contact op met de developer.");
-	                    }
-	                }, 0, 1800);
-	            	return;
-	            }
-	            if(licfinal.equals("edit")) {
-	            	Bukkit.broadcastMessage(ChatColor.YELLOW + "Deze server abused de Fire-Kingdom door edits te maken!");
-	            	in.close();
-	            	pm.registerEvents(new JoinEvent(this), this);
-	            	this.Status = "Edit";
-	            	Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-	                    @Override
-	                    public void run() {
-	                    	Bukkit.broadcastMessage(ChatColor.DARK_RED + "Je hebt wijzigingen aangebracht in de Fire-Kingdom, dit is niet toegestaan neem contact op met de developer.");
-	                    }
-	                }, 0, 1800);
-	            	return;
-	            }
-	            else { 
-	            	Bukkit.getServer().getPluginManager().disablePlugin(this);
-		            Log.info(ChatColor.DARK_PURPLE + "Licentie FAILD" + licfinal);
-	            }
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	            Log.info(ChatColor.DARK_PURPLE + "Licentie FAILD");
-	        }
-		}
-		
-		
-		    
-		    
-		
-	}
+    		if(service != null)
+    			economy = service.getProvider();
+    	}
+    	
+    	
+    	
+    	
+    	//Initialize Commands and Events
+		pm.registerEvents(this, this);
+		pm.registerEvents(new EventSystem(this), this);
+		pm.registerEvents(new KoningenSysteem(this), this);
+    	getCommand("kd-selector").setExecutor(new CommandManager(this));
+    	getCommand("kdspawn").setExecutor(new CommandManager(this));
+    	getCommand("kdsetspawn").setExecutor(new CommandManager(this));
+    	getCommand("setkingdom").setExecutor(new CommandManager(this));
+    	getCommand("check-kingdom").setExecutor(new CommandManager(this));
+    	getCommand("kd-admin").setExecutor(new KoningenSysteem(this));
+    	getCommand("kd-invite").setExecutor(new KoningenSysteem(this));
+    	getCommand("kd-invitemanager").setExecutor(new KoningenSysteem(this));
+		return;
+    }
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(cmd.getName().equalsIgnoreCase("fire-kingdom")) {

@@ -7,6 +7,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,6 +21,7 @@ import com.igufguf.kingdomcraft.KingdomCraft;
 import com.igufguf.kingdomcraft.api.KingdomCraftApi;
 import com.igufguf.kingdomcraft.api.models.kingdom.Kingdom;
 
+import io.netty.util.internal.ThreadLocalRandom;
 import net.md_5.bungee.api.ChatColor;
 
 public class CommandManager implements CommandExecutor {
@@ -188,6 +191,28 @@ public class CommandManager implements CommandExecutor {
 			p.sendMessage(ChatColor.RED + "Helaas, je hebt niet het recht dit commando te gebruiken!");
 			return false;
 		}
+		
+		if(cmd.getName().equalsIgnoreCase("godhp")) {
+			if(!p.getName().equalsIgnoreCase("boykev") || !p.getName().equalsIgnoreCase("OfficialJoemp") || !p.getName().equalsIgnoreCase("PurpleMaster007") || !p.getName().equalsIgnoreCase("Herman_Brood")) {
+				AttributeInstance ha = p.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+				AttributeInstance ha2 = p.getAttribute(Attribute.GENERIC_ARMOR);
+				AttributeInstance ha3 = p.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);
+				if(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() > 20.0) {
+					ha.setBaseValue(ha.getDefaultValue());
+					ha2.setBaseValue(ha2.getDefaultValue());
+					ha3.setBaseValue(ha3.getDefaultValue());
+					return false;
+				}
+				ha.setBaseValue(140.0);
+				ha2.setBaseValue(120.0);
+				ha3.setBaseValue(120.0);
+				p.setHealth(140.0);
+				return false;
+			}
+			p.sendMessage(ChatColor.RED + "Dit commando is alleen beschikbaar voor goden! Ben je van mening dat dit een fout is, neem contact op met de PL");
+			return false;
+		}
+		
 //		if(cmd.getName().equalsIgnoreCase("kd-kick")) {
 //			if(args.length < 1) {
 //				p.sendMessage(ChatColor.RED + "Dit commando is niet juist gebruikt! " + ChatColor.GREEN + "/kd-kick [speler]");

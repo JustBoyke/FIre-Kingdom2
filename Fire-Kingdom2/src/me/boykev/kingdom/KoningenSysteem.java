@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -43,6 +44,14 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 		return item;
 	}
 	
+	public Player checkPlayer(String player, String kuthoer) {
+		if(Bukkit.getPlayer(player) == null) {
+			
+		}
+		
+		return null;
+	}
+	
 	public static Inventory makeInv(Player player, String name, Integer size) {
 		Inventory menu = Bukkit.createInventory(player, size, name);
 		return menu;
@@ -51,6 +60,18 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 		um = new UserManager(instance, p);
 		return um.getConfig().getString(config);
 	}
+	
+	public static Player checkPlayer(String name) {
+		if(Bukkit.getPlayer(name) == null) {
+			OfflinePlayer op = Bukkit.getOfflinePlayer(name);
+			System.out.print("Player uit chache gehaald");
+			Player p = op.getPlayer();
+			return p;
+		}
+		Player p = Bukkit.getPlayer(name);
+		return p;
+	}
+	
 	public static HashMap<Player, Integer> invite = new HashMap<Player, Integer>();
 	
 	@Override
@@ -58,12 +79,12 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 		Player p = (Player) sender;
 		if(cmd.getName().equalsIgnoreCase("kd-admin")) {
 			if(args.length < 1) {
-				p.sendMessage(ChatColor.RED + "Je bent een retard");
+				p.sendMessage(ChatColor.RED + "Je gebuikt het commando niet juist, Gebruik /kd-admin [player]");
 				return false;
 			}
-			Player target = Bukkit.getPlayer(args[0]);
+			Player target = checkPlayer(args[0]);
 			if (target == null) {
-				p.sendMessage(ChatColor.RED + "Je bent achterlijk");
+				p.sendMessage(ChatColor.RED + "De ingevoerde speler is niet gevonden!");
 				return false;
 			}
 			if(kapi.getUserHandler().getUser(p).getRank().equalsIgnoreCase("koning") || p.hasPermission("kingdom.admin")) {

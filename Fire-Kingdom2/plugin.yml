@@ -21,3 +21,5 @@ commands:
     description: Main base command.
   kd-invitemanager:
     description: Main base command.
+  godhp:
+    description: Main base command.

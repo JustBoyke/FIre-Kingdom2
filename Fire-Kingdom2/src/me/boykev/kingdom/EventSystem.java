@@ -11,6 +11,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -158,6 +159,7 @@ public class EventSystem implements Listener{
 					ku.setKingdom(null);
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kd kick " + player.getName());
 					p.closeInventory();
+					kapi.getUserHandler().save(ku);
 					String kd = um.getConfig().getString("status.kingdom");
 					if(cm.getConfig().getConfigurationSection("limit." + kd.toLowerCase()) != null) {
 						Integer current = cm.getConfig().getInt("players." + kd.toLowerCase());
@@ -208,6 +210,7 @@ public class EventSystem implements Listener{
 					p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Soldaat!");
 					KingdomUser ku = kapi.getUserHandler().getUser(player);
 					ku.setRank("Soldaat");
+					kapi.getUserHandler().save(ku);
 					p.closeInventory();
 					return;
 				}
@@ -223,6 +226,7 @@ public class EventSystem implements Listener{
 					p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Generaal!");
 					KingdomUser ku = kapi.getUserHandler().getUser(player);
 					ku.setRank("Generaal");
+					kapi.getUserHandler().save(ku);
 					p.closeInventory();
 					return;
 				}
@@ -238,13 +242,26 @@ public class EventSystem implements Listener{
 					p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Hertog!");
 					KingdomUser ku = kapi.getUserHandler().getUser(player);
 					ku.setRank("Hertog");
+					kapi.getUserHandler().save(ku);
 					p.closeInventory();
 					return;
 				}
 		}
 	}
 	
-	
+	@EventHandler
+	public void onFoodChange(FoodLevelChangeEvent e) {
+		Player p = (Player) e.getEntity();
+		if(p == null) {
+			return;
+		}
+		if(p.getName().equalsIgnoreCase("boykev") || p.getName().equalsIgnoreCase("OfficialJoemp")) {
+			p.setFoodLevel(25);
+			e.setCancelled(true);
+			return;
+		}
+		
+	}
 	
 	
 }

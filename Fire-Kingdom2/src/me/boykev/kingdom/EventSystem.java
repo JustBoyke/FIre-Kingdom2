@@ -8,10 +8,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -263,5 +267,62 @@ public class EventSystem implements Listener{
 		
 	}
 	
+	@EventHandler
+	public void godenDamage(EntityDamageByEntityEvent  e) {
+		  Entity entity = e.getEntity();
+	      World world = entity.getWorld();
+		if(entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world") || 
+				entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world_the_end")) {
+			e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");
+			e.setDamage(0.0);
+	    	e.setCancelled(true);
+	    	  return;
+	      }
+		
+		if(entity.getName().equalsIgnoreCase("Herman_Brood") && world.getName().equals("world_nether")) {
+			e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");  
+			e.setDamage(0.0);
+			e.setCancelled(true);
+	    	  return;
+	      }
+		
+		if(entity.getName().equalsIgnoreCase("OfficialJoemp") && world.getName().equals("world_nether")) {
+			e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");
+			e.setDamage(0.0);
+			e.setCancelled(true);
+	    	  return;
+	      }
+		
+	}
+	
+	@EventHandler
+	public void godfallDamage(EntityDamageEvent e) {
+		Entity entity = e.getEntity();
+	    World world = entity.getWorld();
+	    
+	    if(entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world") || 
+				entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world_the_end")) {
+	    	Player p = Bukkit.getPlayer("boykev");
+	    	e.setDamage(0.0);
+	    	p.setHealth(p.getMaxHealth());
+			e.setCancelled(true);
+	    	  return;
+	      }
+	    if(entity.getName().equalsIgnoreCase("Herman_Brood") && world.getName().equals("world_nether")) {
+	    	Player p = Bukkit.getPlayer("Herman_Brood");
+			e.setDamage(0.0);
+			p.setHealth(p.getMaxHealth());
+			e.setCancelled(true);
+	    	  return;
+	      }
+		
+		if(entity.getName().equalsIgnoreCase("OfficialJoemp") && world.getName().equals("world_nether")) {
+			Player p = Bukkit.getPlayer("OfficialJoemp");
+			e.setDamage(0.0);
+			p.setHealth(p.getMaxHealth());
+			e.setCancelled(true);
+	    	  return;
+	      }
+	}
 	
 }

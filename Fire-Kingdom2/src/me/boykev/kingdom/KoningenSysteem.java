@@ -23,6 +23,7 @@ import com.igufguf.kingdomcraft.api.models.kingdom.KingdomUser;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import me.Cmaaxx.PlayTime.PlayTimeAPI;
 
 public class KoningenSysteem implements Listener, CommandExecutor {
 	
@@ -59,6 +60,11 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 	public static String checkOther(Player p, String config) {
 		um = new UserManager(instance, p);
 		return um.getConfig().getString(config);
+	}
+	
+	public static int checkOtherTime(Player p) {
+		int kaas = PlayTimeAPI.getHours(p);
+		return kaas;
 	}
 	
 	public static Player checkPlayer(String name) {
@@ -128,6 +134,7 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 					p.sendMessage(ChatColor.RED + "De speler die je hebt opegeven bestaat niet of is niet online!");
 					return false;
 				}
+				if(checkOtherTime(target) < 8) { p.sendMessage(ChatColor.RED + "Deze speler heeft nog geen 8 uur playtime!" + ChatColor.GRAY + " Hij heeft nu: " + checkOtherTime(target) + " Uren"); return false; }
 				String kd = um.getConfig().getString("status.kingdom");
 				Integer max = kapi.getKingdomHandler().getKingdom(kd).getMaxMembers();
 				List<KingdomUser> cul = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom(kd));
@@ -161,6 +168,7 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 						um.editConfig().set("status.kingdom", args[1].toUpperCase());
 						KingdomUser ku = kapi.getUserHandler().getUser(p);
 						ku.setKingdom(args[1]);
+						Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "kd set " + p.getName() + " " + args[1]);
 						um.save();
 						p.sendMessage(ChatColor.GREEN + "Je bent het kingdom gejoined");
 						invite.remove(p);

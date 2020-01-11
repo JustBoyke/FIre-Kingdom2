@@ -186,13 +186,25 @@ public class EventSystem implements Listener{
 					ArrayList<String> list = new ArrayList<String>();
 					list.add(ChatColor.RED + "Wijzig rang van:");
 					list.add(ChatColor.BLUE + target.getName());
-					ItemStack i1 = KoningenSysteem.makeItem(ChatColor.GRAY + "Soldaat", list, Material.WOOD_SWORD, 1);
-					ItemStack i2 = KoningenSysteem.makeItem(ChatColor.RED + "Generaal", list, Material.STONE_SWORD, 1);
-					ItemStack i3 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Hertog", list, Material.GOLD_SWORD, 1);
+					ItemStack l1 = KoningenSysteem.makeItem(ChatColor.RED + "Generaal", list, Material.DIAMOND_SWORD, 1);
+					ItemStack l2 = KoningenSysteem.makeItem(ChatColor.RED + "Luitenant", list, Material.IRON_SWORD, 1);
+					ItemStack l3 = KoningenSysteem.makeItem(ChatColor.RED + "Soldaat", list, Material.GOLD_SWORD, 1);
 					
-					uinv.setItem(0, i1);
-					uinv.setItem(1, i2);
-					uinv.setItem(2, i3);
+					ItemStack h1 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Hertog", list, Material.DIAMOND_BLOCK, 1);
+					ItemStack h2 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Raadgever", list, Material.IRON_BLOCK, 1);
+					ItemStack h3 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Handelaar", list, Material.GOLD_BLOCK, 1);
+					ItemStack h4 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Tovenaar", list, Material.POTION, 1);
+					ItemStack h5 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Dorpeling", list, Material.STONE, 1);
+					
+					
+					uinv.setItem(0, h5);
+					uinv.setItem(1, l3);
+					uinv.setItem(2, h3);
+					uinv.setItem(3, l2);
+					uinv.setItem(4, h2);
+					uinv.setItem(5, l1);
+					uinv.setItem(6, h1);
+					uinv.setItem(7, h4);
 					p.openInventory(uinv);
 					
 				}
@@ -202,54 +214,142 @@ public class EventSystem implements Listener{
 				e.setCancelled(true);
 				return;
 			}
-				if(item.getType() == Material.WOOD_SWORD && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GRAY + "Soldaat")) {
-					List<String> lore = item.getItemMeta().getLore();
-					String pl = ChatColor.stripColor(lore.get(1).toString());
-					Player player = Bukkit.getPlayer(pl);
-					if(player == null) {
-						p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
-						return;
-					}
-					player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar soldaat gezet!");
-					p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Soldaat!");
-					KingdomUser ku = kapi.getUserHandler().getUser(player);
-					ku.setRank("Soldaat");
-					kapi.getUserHandler().save(ku);
-					p.closeInventory();
+			if(item.getType() == Material.DIAMOND_SWORD && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.RED + "Generaal")) {
+				List<String> lore = item.getItemMeta().getLore();
+				String pl = ChatColor.stripColor(lore.get(1).toString());
+				Player player = Bukkit.getPlayer(pl);
+				if(player == null) {
+					p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
 					return;
 				}
-				if(item.getType() == Material.STONE_SWORD && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.RED + "Generaal")) {
-					List<String> lore = item.getItemMeta().getLore();
-					String pl = ChatColor.stripColor(lore.get(1).toString());
-					Player player = Bukkit.getPlayer(pl);
-					if(player == null) {
-						p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
-						return;
-					}
-					player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Generaal gezet!");
-					p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Generaal!");
-					KingdomUser ku = kapi.getUserHandler().getUser(player);
-					ku.setRank("Generaal");
-					kapi.getUserHandler().save(ku);
-					p.closeInventory();
+				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar generaal gezet!");
+				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Generaal!");
+				KingdomUser ku = kapi.getUserHandler().getUser(player);
+				ku.setRank("Generaal");
+				kapi.getUserHandler().save(ku);
+				p.closeInventory();
+				return;
+			}
+			
+			if(item.getType() == Material.IRON_SWORD && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.RED + "Luitenant")) {
+				List<String> lore = item.getItemMeta().getLore();
+				String pl = ChatColor.stripColor(lore.get(1).toString());
+				Player player = Bukkit.getPlayer(pl);
+				if(player == null) {
+					p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
 					return;
 				}
-				if(item.getType() == Material.GOLD_SWORD && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_GREEN + "Hertog")) {
-					List<String> lore = item.getItemMeta().getLore();
-					String pl = ChatColor.stripColor(lore.get(1).toString());
-					Player player = Bukkit.getPlayer(pl);
-					if(player == null) {
-						p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
-						return;
-					}
-					player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Hertog gezet!");
-					p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Hertog!");
-					KingdomUser ku = kapi.getUserHandler().getUser(player);
-					ku.setRank("Hertog");
-					kapi.getUserHandler().save(ku);
-					p.closeInventory();
+				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Luitenant gezet!");
+				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Luitenant!");
+				KingdomUser ku = kapi.getUserHandler().getUser(player);
+				ku.setRank("Luitenant");
+				kapi.getUserHandler().save(ku);
+				p.closeInventory();
+				return;
+			}
+			
+			if(item.getType() == Material.GOLD_SWORD && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.RED + "Soldaat")) {
+				List<String> lore = item.getItemMeta().getLore();
+				String pl = ChatColor.stripColor(lore.get(1).toString());
+				Player player = Bukkit.getPlayer(pl);
+				if(player == null) {
+					p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
 					return;
 				}
+				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar soldaat gezet!");
+				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Soldaat!");
+				KingdomUser ku = kapi.getUserHandler().getUser(player);
+				ku.setRank("Soldaat");
+				kapi.getUserHandler().save(ku);
+				p.closeInventory();
+				return;
+			}
+			
+			if(item.getType() == Material.DIAMOND_BLOCK && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_GREEN + "Hertog")) {
+				List<String> lore = item.getItemMeta().getLore();
+				String pl = ChatColor.stripColor(lore.get(1).toString());
+				Player player = Bukkit.getPlayer(pl);
+				if(player == null) {
+					p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
+					return;
+				}
+				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Hertog gezet!");
+				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Hertog!");
+				KingdomUser ku = kapi.getUserHandler().getUser(player);
+				ku.setRank("Hertog");
+				kapi.getUserHandler().save(ku);
+				p.closeInventory();
+				return;
+			}
+			
+			if(item.getType() == Material.IRON_BLOCK && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_GREEN + "Raadgever")) {
+				List<String> lore = item.getItemMeta().getLore();
+				String pl = ChatColor.stripColor(lore.get(1).toString());
+				Player player = Bukkit.getPlayer(pl);
+				if(player == null) {
+					p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
+					return;
+				}
+				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Raadgever gezet!");
+				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Raadgever!");
+				KingdomUser ku = kapi.getUserHandler().getUser(player);
+				ku.setRank("Raadgever");
+				kapi.getUserHandler().save(ku);
+				p.closeInventory();
+				return;
+			}
+			
+			if(item.getType() == Material.GOLD_BLOCK && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_GREEN + "Handelaar")) {
+				List<String> lore = item.getItemMeta().getLore();
+				String pl = ChatColor.stripColor(lore.get(1).toString());
+				Player player = Bukkit.getPlayer(pl);
+				if(player == null) {
+					p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
+					return;
+				}
+				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Handelaar gezet!");
+				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Handelaar!");
+				KingdomUser ku = kapi.getUserHandler().getUser(player);
+				ku.setRank("Handelaar");
+				kapi.getUserHandler().save(ku);
+				p.closeInventory();
+				return;
+			}
+			
+			if(item.getType() == Material.POTION && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_GREEN + "Tovenaar")) {
+				List<String> lore = item.getItemMeta().getLore();
+				String pl = ChatColor.stripColor(lore.get(1).toString());
+				Player player = Bukkit.getPlayer(pl);
+				if(player == null) {
+					p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
+					return;
+				}
+				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Tovenaar gezet!");
+				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Tovenaar!");
+				KingdomUser ku = kapi.getUserHandler().getUser(player);
+				ku.setRank("Tovenaar");
+				kapi.getUserHandler().save(ku);
+				p.closeInventory();
+				return;
+			}
+			
+			if(item.getType() == Material.STONE && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_GREEN + "Dorpeling")) {
+				List<String> lore = item.getItemMeta().getLore();
+				String pl = ChatColor.stripColor(lore.get(1).toString());
+				Player player = Bukkit.getPlayer(pl);
+				if(player == null) {
+					p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
+					return;
+				}
+				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Dorpeling gezet!");
+				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Dorpeling!");
+				KingdomUser ku = kapi.getUserHandler().getUser(player);
+				ku.setRank("Dorpeling");
+				kapi.getUserHandler().save(ku);
+				p.closeInventory();
+				return;
+			}
+			
 		}
 	}
 	

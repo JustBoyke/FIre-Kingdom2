@@ -29,11 +29,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
 import net.md_5.bungee.api.ChatColor;
 import net.milkbowl.vault.Vault;
@@ -53,7 +55,8 @@ public class Main extends JavaPlugin implements Listener {
 	public List<Player> nokd2 = new ArrayList<Player>();
 	public HashMap<Player, Boolean> nokd = new HashMap<Player, Boolean>();
 	public HashMap<Player, Boolean> nover = new HashMap<Player, Boolean>();
-	
+	private LicenseCheck lc;
+
 	
 	@Override
 	public void onEnable() {
@@ -75,8 +78,12 @@ public class Main extends JavaPlugin implements Listener {
 		}
 		
 		
-		
 		PluginManager pm = Bukkit.getPluginManager();
+		lc = new LicenseCheck(this);
+		if(lc.licentie("Fire-Kingdom2") == false) {
+			pm.disablePlugin(this);
+			return;
+		}
 		cm = new ConfigManager(this);
 		cm.LoadDefaults();
 		//initizlize Vault
@@ -104,6 +111,21 @@ public class Main extends JavaPlugin implements Listener {
     	getCommand("kd-admin").setExecutor(new KoningenSysteem(this));
     	getCommand("kd-invite").setExecutor(new KoningenSysteem(this));
     	getCommand("kd-invitemanager").setExecutor(new KoningenSysteem(this));
+    	
+    	new BukkitRunnable() {
+    		public void run() {
+    			if(lc.licentie("Fire-Kingdom2") == true) {
+            		Bukkit.broadcast("Check Uitgevoerd", "server.admin");
+            	}
+            	if(lc.licentie("Fire-Kingdom2") == false) {
+            		getCommand("kd-invitemanager").setExecutor(null);
+            		getCommand("kdspawn").setExecutor(null);
+            		getCommand("kd-selector").setExecutor(null);
+            		this.cancel();
+            	}
+    		}
+    	}.runTaskTimer(this, 0, 30);
+    	
 		return;
     }
 	

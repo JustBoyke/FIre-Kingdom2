@@ -115,7 +115,7 @@ public class Main extends JavaPlugin implements Listener {
     	new BukkitRunnable() {
     		public void run() {
     			if(lc.licentie("Fire-Kingdom2") == true) {
-            		Bukkit.broadcast("Check Uitgevoerd", "server.admin");
+            		System.out.println("Licentie Status Geupdate!");
             	}
             	if(lc.licentie("Fire-Kingdom2") == false) {
             		getCommand("kd-invitemanager").setExecutor(null);
@@ -124,7 +124,7 @@ public class Main extends JavaPlugin implements Listener {
             		this.cancel();
             	}
     		}
-    	}.runTaskTimer(this, 0, 30);
+    	}.runTaskTimer(this, 0, 1800);
     	
 		return;
     }

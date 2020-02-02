@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -395,6 +394,7 @@ public class EventSystem implements Listener{
 		
 	}
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void godfallDamage(EntityDamageEvent e) {
 		Entity entity = e.getEntity();

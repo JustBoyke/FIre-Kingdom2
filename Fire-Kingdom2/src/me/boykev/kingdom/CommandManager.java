@@ -2,6 +2,7 @@ package me.boykev.kingdom;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -29,7 +30,9 @@ public class CommandManager implements CommandExecutor {
 	private ConfigManager cm;
 	private static UserManager um;
 	private int kdspawntime = 60;
+	private int kdspawntime2 = 1800;
 	public HashMap<String, Long> kdspawnc = new HashMap<String, Long>();
+	public HashMap<String, Long> kdspawnc2 = new HashMap<String, Long>();
 	KingdomCraft kdc = (KingdomCraft) Bukkit.getPluginManager().getPlugin("KingdomCraft");
 	KingdomCraftApi kapi = kdc.getApi();
 
@@ -125,6 +128,18 @@ public class CommandManager implements CommandExecutor {
 				p.sendMessage(ChatColor.RED + "ERROR" + ChatColor.WHITE + " >> " + ChatColor.DARK_RED + "Foutcode S_NOT_DEFINED FOR: " + kingdom);
 				return false;
 			}
+			
+			String time = um.getConfig().getString("cooldowndata." + p.getUniqueId().toString() + ".time");
+			String cooldowntime = um.getConfig().getString("cooldowndata." + p.getUniqueId().toString() + ".cooldown");
+			if(!(time == null)) { 
+				Long tijd = Long.valueOf(time);
+				Long cdt = Long.valueOf(cooldowntime);
+				long left = (tijd/1000 + cdt) - (System.currentTimeMillis()/1000);
+				if(left > 0) {
+					p.sendMessage(ChatColor.RED + "Je moet nog " + left + " seconden wachten tot je weer kdspawn kan gebruiken!");
+					return false;
+				}
+			}
 			if(kdspawnc.containsKey(p.getName())) {
 				long left = ((kdspawnc.get(p.getName())/1000)+kdspawntime) - (System.currentTimeMillis()/1000);
 				if(left > 0) {
@@ -132,6 +147,7 @@ public class CommandManager implements CommandExecutor {
 					return false;
 				}
 			}
+			
 			World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn." + kingdom + ".world"));
 			double x = cm.getConfig().getDouble("kdspawn." + kingdom + ".x");
 			double y = cm.getConfig().getDouble("kdspawn." + kingdom + ".y");
@@ -210,6 +226,27 @@ public class CommandManager implements CommandExecutor {
 			}
 			p.sendMessage(ChatColor.RED + "Dit commando is alleen beschikbaar voor goden! Ben je van mening dat dit een fout is, neem contact op met de PL");
 			return false;
+		}
+		if(cmd.getName().equalsIgnoreCase("steal")) {
+			
+			if(kdspawnc2.containsKey(p.getName())) {
+				long left = ((kdspawnc.get(p.getName())/1000)+kdspawntime2) - (System.currentTimeMillis()/1000);
+				if(left > 0) {
+					p.sendMessage(ChatColor.RED + "Je moet nog " + left + " seconden wachten tot je weer een relic mag stelen, leg de huidige relic terug, doe je dit niet kan dit bannable zijn!");
+					return false;
+				}
+			}
+			String ukd = kapi.getUserHandler().getUser(p.getName()).getKingdom();
+			Kingdom kd = kapi.getKingdomHandler().getKingdom(ukd);
+			List<Player> cul = kapi.getKingdomHandler().getOnlineMembers(kd);
+			for(Player pl : cul) {
+				pl.sendMessage(ChatColor.RED + "/kdspawn is 30 minuten uitgescakeld voor je kingdom door het stelen van een relic!");
+				editOther(pl, "cooldowndata." + pl.getUniqueId().toString() + ".time", String.valueOf(System.currentTimeMillis()));
+				editOther(pl, "cooldowndata." + pl.getUniqueId().toString() + ".cooldown", "1800");
+			}
+			return false;
+			
+			
 		}
 		
 //		if(cmd.getName().equalsIgnoreCase("kd-kick")) {

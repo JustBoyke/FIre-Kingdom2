@@ -23,3 +23,5 @@ commands:
     description: Main base command.
   godhp:
     description: Main base command.
+  steal:
+    description: Main base command.

@@ -7,7 +7,6 @@ import java.net.URLConnection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.libs.jline.internal.Log;
-import org.bukkit.plugin.Plugin;
 import net.md_5.bungee.api.ChatColor;
 
 public class LicenseCheck {
@@ -27,9 +26,7 @@ public class LicenseCheck {
                 	Bukkit.broadcastMessage(ChatColor.YELLOW + "Everything is fine, have fun using LightningSword by Boykev :)");
                 }
             }, 100);
-			String serverid = Bukkit.getServer().getServerId();
 	    	int serverport = Bukkit.getServer().getPort();
-	    	String bukkitip = Bukkit.getServer().getIp();
 	    	try {
 	    		URL url = new URL("http://api.boykevanvugt.nl/keymanager.php?type=create&version=1&plname=" + plname + "&serverport=" + serverport);
 	            URLConnection connection = url.openConnection();

@@ -111,6 +111,7 @@ public class Main extends JavaPlugin implements Listener {
     	getCommand("kd-admin").setExecutor(new KoningenSysteem(this));
     	getCommand("kd-invite").setExecutor(new KoningenSysteem(this));
     	getCommand("kd-invitemanager").setExecutor(new KoningenSysteem(this));
+    	getCommand("steal").setExecutor(new CommandManager(this));
     	
     	new BukkitRunnable() {
     		public void run() {

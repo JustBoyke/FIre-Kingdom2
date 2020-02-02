@@ -69,6 +69,7 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 	
 	public static Player checkPlayer(String name) {
 		if(Bukkit.getPlayer(name) == null) {
+			@SuppressWarnings("deprecation")
 			OfflinePlayer op = Bukkit.getOfflinePlayer(name);
 			System.out.print("Player uit chache gehaald");
 			Player p = op.getPlayer();

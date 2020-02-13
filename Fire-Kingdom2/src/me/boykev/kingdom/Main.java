@@ -56,6 +56,7 @@ public class Main extends JavaPlugin implements Listener {
 	public HashMap<Player, Boolean> nokd = new HashMap<Player, Boolean>();
 	public HashMap<Player, Boolean> nover = new HashMap<Player, Boolean>();
 	private LicenseCheck lc;
+	private PlaceholderAPI pl;
 
 	
 	@Override
@@ -112,6 +113,10 @@ public class Main extends JavaPlugin implements Listener {
     	getCommand("kd-invite").setExecutor(new KoningenSysteem(this));
     	getCommand("kd-invitemanager").setExecutor(new KoningenSysteem(this));
     	getCommand("steal").setExecutor(new CommandManager(this));
+    	if(pm.getPlugin("PlaceholderAPI") != null) {
+			new PlaceholderAPI(this).register();
+		}
+    	pl = new PlaceholderAPI(this);
     	
     	new BukkitRunnable() {
     		public void run() {
@@ -141,28 +146,9 @@ public class Main extends JavaPlugin implements Listener {
 				return false;
 			}
 		}
-		
-		
 		return false;
 	}
 	
-	
-
-	
-    @EventHandler
-    public void craftItem(PrepareItemCraftEvent e) {
-    	Material itemType = e.getRecipe().getResult().getType();
-//    	Byte itemData = e.getRecipe().getResult().getData().getData();
-    	if(itemType == Material.ENDER_CHEST || itemType == Material.BEACON) {
-    		e.getInventory().setResult(new ItemStack(Material.AIR));
-    		for (HumanEntity he : e.getViewers()) {
-    			if (he instanceof Player) {
-    				he.sendMessage(ChatColor.RED + "Dit item kan je niet craften!");
-    				return;
-    			}
-    		}
-    	}
-    }
 	
     
     

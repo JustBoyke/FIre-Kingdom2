@@ -135,7 +135,7 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 					p.sendMessage(ChatColor.RED + "De speler die je hebt opegeven bestaat niet of is niet online!");
 					return false;
 				}
-				if(checkOtherTime(target) < 8) { p.sendMessage(ChatColor.RED + "Deze speler heeft nog geen 8 uur playtime!" + ChatColor.GRAY + " Hij heeft nu: " + checkOtherTime(target) + " Uren"); return false; }
+				if(checkOtherTime(target) < 3) { p.sendMessage(ChatColor.RED + "Deze speler heeft nog geen 3 uur playtime!" + ChatColor.GRAY + " Hij heeft nu: " + checkOtherTime(target) + " Uren"); return false; }
 				String kd = um.getConfig().getString("status.kingdom");
 				Integer max = kapi.getKingdomHandler().getKingdom(kd).getMaxMembers();
 				List<KingdomUser> cul = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom(kd));

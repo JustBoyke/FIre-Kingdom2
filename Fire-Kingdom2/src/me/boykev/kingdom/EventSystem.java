@@ -12,8 +12,10 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -423,6 +425,26 @@ public class EventSystem implements Listener{
 			e.setCancelled(true);
 	    	  return;
 	      }
+		Player p = Bukkit.getPlayer(entity.getName());
+		if(p == null) { return; }
+		if(p.getName().equalsIgnoreCase("CatloverAnouk")){
+			if (e.getCause().equals(DamageCause.FALL)){
+				e.setDamage(0.0);
+				e.setCancelled(false);
+				return;
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onBlockBreak(BlockBreakEvent e) {
+		if(e.getBlock().getType() == Material.BEACON) {
+			if(!e.getPlayer().hasPermission("break.beacon")) {
+				e.setCancelled(true);
+				e.getPlayer().sendMessage(ChatColor.RED + "Je kan een beacon niet breken, deze wordt beschermd door godelijke krachten!");
+				return;
+			}
+		}
 	}
 	
 }

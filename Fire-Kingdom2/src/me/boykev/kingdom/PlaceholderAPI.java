@@ -119,6 +119,9 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         if(identifier.equals("kdname")){
         	KingdomUser ku = kapi.getUserHandler().getUser(player);
         	Kingdom kd = kapi.getKingdomHandler().getKingdom(ku.getKingdom());
+        	if(kd == null) {
+        		return ChatColor.GRAY + "Geen Kingdom";
+        	}
         	String kdname = kd.getName();
             return kdname;
         }
@@ -127,6 +130,9 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         if(identifier.equals("kdrank")){
         	KingdomUser ku = kapi.getUserHandler().getUser(player);
         	Kingdom kd = kapi.getKingdomHandler().getKingdom(ku.getKingdom());
+        	if(kd == null) {
+        		return ChatColor.GRAY + "Geen Kingdom Rank";
+        	}
         	KingdomRank kr = kd.getRank(ku.getRank());
         	String print = ChatColor.translateAlternateColorCodes('&', kr.getName());
         	return print;

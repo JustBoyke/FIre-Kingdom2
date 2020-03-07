@@ -27,3 +27,5 @@ commands:
     description: Main base command.
   rulemanager-accept:
     description: Main base command.
+  kdsetcolor:
+    description: Main base command.

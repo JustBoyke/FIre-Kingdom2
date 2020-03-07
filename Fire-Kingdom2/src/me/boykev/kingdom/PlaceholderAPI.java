@@ -19,6 +19,7 @@ import net.md_5.bungee.api.ChatColor;
 public class PlaceholderAPI extends PlaceholderExpansion {
 
     private Main plugin;
+    private ConfigManager cm;
     KingdomCraft kdc = (KingdomCraft) Bukkit.getPluginManager().getPlugin("KingdomCraft");
 	KingdomCraftApi kapi = kdc.getApi();
 
@@ -110,7 +111,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
      */
     @Override
     public String onPlaceholderRequest(Player player, String identifier){
-
+    	cm = new ConfigManager(plugin);
         if(player == null){
             return "";
         }
@@ -136,6 +137,16 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         	KingdomRank kr = kd.getRank(ku.getRank());
         	String print = ChatColor.translateAlternateColorCodes('&', kr.getName());
         	return print;
+        }
+        
+        if(identifier.equals("kd-color")) {
+        	KingdomUser ku = kapi.getUserHandler().getUser(player);
+        	Kingdom kd = kapi.getKingdomHandler().getKingdom(ku.getKingdom());
+        	if(kd == null) {
+        		return null;
+        	}
+        	String johan = cm.getConfig().getString("colors." + kd.getName().toUpperCase());
+        	return johan;
         }
  
         // We return null if an invalid placeholder (f.e. %someplugin_placeholder3%) 

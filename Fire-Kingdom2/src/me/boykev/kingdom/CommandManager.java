@@ -227,6 +227,17 @@ public class CommandManager implements CommandExecutor {
 			p.sendMessage(ChatColor.RED + "Dit commando is alleen beschikbaar voor goden! Ben je van mening dat dit een fout is, neem contact op met de PL");
 			return false;
 		}
+		if(cmd.getName().equalsIgnoreCase("kdsetcolor")) {
+			if(!p.hasPermission("kingdom.setcolor")) { p.sendMessage(ChatColor.RED + "Je hebt hier geen permissies voor!"); return false; }
+			if(args.length < 2) { p.sendMessage(ChatColor.RED + "Gebruik /kdsetcolor [kingdom] [colorcode]"); return false; }
+			String arg1 = args[0].toUpperCase();
+			String color = args[1];
+			cm.editConfig().set("colors." + arg1, "&" + color);
+			cm.save();
+			String test = cm.getConfig().getString("colors." + arg1) + "test";
+			p.sendMessage("Kleur aangepast naar: " + color + " voor: " + arg1 + " " + ChatColor.translateAlternateColorCodes('&', test));
+			return false;
+		}
 		if(cmd.getName().equalsIgnoreCase("steal")) {
 			
 			if(kdspawnc2.containsKey(p.getName())) {

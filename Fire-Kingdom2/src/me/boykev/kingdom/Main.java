@@ -110,6 +110,7 @@ public class Main extends JavaPlugin implements Listener {
     	getCommand("setkingdom").setExecutor(new CommandManager(this));
     	getCommand("godhp").setExecutor(new CommandManager(this));
     	getCommand("check-kingdom").setExecutor(new CommandManager(this));
+    	getCommand("kdsetcolor").setExecutor(new CommandManager(this));
     	getCommand("kd-admin").setExecutor(new KoningenSysteem(this));
     	getCommand("kd-invite").setExecutor(new KoningenSysteem(this));
     	getCommand("kd-invitemanager").setExecutor(new KoningenSysteem(this));

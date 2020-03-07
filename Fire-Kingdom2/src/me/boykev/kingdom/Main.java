@@ -103,6 +103,7 @@ public class Main extends JavaPlugin implements Listener {
 		pm.registerEvents(this, this);
 		pm.registerEvents(new EventSystem(this), this);
 		pm.registerEvents(new KoningenSysteem(this), this);
+		pm.registerEvents(new CheckRules(this), this);
     	getCommand("kd-selector").setExecutor(new CommandManager(this));
     	getCommand("kdspawn").setExecutor(new CommandManager(this));
     	getCommand("kdsetspawn").setExecutor(new CommandManager(this));
@@ -113,6 +114,7 @@ public class Main extends JavaPlugin implements Listener {
     	getCommand("kd-invite").setExecutor(new KoningenSysteem(this));
     	getCommand("kd-invitemanager").setExecutor(new KoningenSysteem(this));
     	getCommand("steal").setExecutor(new CommandManager(this));
+    	getCommand("rulemanager-accept").setExecutor(new CheckRules(this));
     	if(pm.getPlugin("PlaceholderAPI") != null) {
 			new PlaceholderAPI(this).register();
 		}

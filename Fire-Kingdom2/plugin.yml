@@ -25,3 +25,5 @@ commands:
     description: Main base command.
   steal:
     description: Main base command.
+  rulemanager-accept:
+    description: Main base command.

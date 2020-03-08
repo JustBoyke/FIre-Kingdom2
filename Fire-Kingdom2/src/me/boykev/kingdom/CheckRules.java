@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -38,6 +39,26 @@ public class CheckRules implements Listener, CommandExecutor{
 			msg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/rulemanager-accept"));
 			p.spigot().sendMessage(msg);
 			rulemanager.put(p, 1);
+			
+			new BukkitRunnable() {
+				@Override
+				public void run() {
+					if(rulemanager.containsKey(p)) {
+						p.sendMessage(ChatColor.DARK_RED + "----[RULES]----");
+						p.sendMessage(ChatColor.RED + "Hey, je hebt onze regels en voorwaarden nog niet gelezen en");
+						p.sendMessage(ChatColor.RED + "geaccepteerd. Je kan de regels lezen via: https://fire-mc.nl/kd");
+						p.sendMessage(ChatColor.RED + "Onze voorwaarden vindt je op: https://fire-enterprise.nl/voorwaarden");
+						TextComponent msg = new TextComponent(ChatColor.GREEN + "Om te accepteren " + ChatColor.BLUE + "(Klik Hier)");
+						msg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/rulemanager-accept"));
+						p.spigot().sendMessage(msg);
+					}
+					if(!rulemanager.containsKey(p)) {
+						this.cancel();
+					}
+					
+				}
+			}.runTaskTimer(instance, 60L, 60L);
+			
 			return;
 		}
 		if(checkup == "v1") {

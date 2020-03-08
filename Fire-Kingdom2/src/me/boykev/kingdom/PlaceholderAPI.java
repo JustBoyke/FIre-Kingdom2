@@ -143,7 +143,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
         	KingdomUser ku = kapi.getUserHandler().getUser(player);
         	Kingdom kd = kapi.getKingdomHandler().getKingdom(ku.getKingdom());
         	if(kd == null) {
-        		return null;
+        		return ChatColor.translateAlternateColorCodes('&', "&8");
         	}
         	String johan = cm.getConfig().getString("colors." + kd.getName().toUpperCase());
         	return johan;

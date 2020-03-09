@@ -22,6 +22,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 
 import com.igufguf.kingdomcraft.KingdomCraft;
 import com.igufguf.kingdomcraft.api.KingdomCraftApi;
@@ -374,24 +375,34 @@ public class EventSystem implements Listener{
 	      World world = entity.getWorld();
 		if(entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world") || 
 				entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world_the_end")) {
-			e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");
-			e.setDamage(0.0);
-	    	e.setCancelled(true);
-	    	  return;
+			
+			Player p = Bukkit.getPlayer("boykev");
+			if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
+				e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");
+				e.setDamage(0.0);
+		    	e.setCancelled(true);
+		    	return;
+			}
 	      }
 		
 		if(entity.getName().equalsIgnoreCase("Herman_Brood") && world.getName().equals("world_nether")) {
-			e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");  
-			e.setDamage(0.0);
-			e.setCancelled(true);
-	    	  return;
+			Player p = Bukkit.getPlayer("Herman_Brood");
+			if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
+				e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");
+				e.setDamage(0.0);
+		    	e.setCancelled(true);
+		    	return;
+			}
 	      }
 		
 		if(entity.getName().equalsIgnoreCase("OfficialJoemp") && world.getName().equals("world_nether")) {
-			e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");
-			e.setDamage(0.0);
-			e.setCancelled(true);
-	    	  return;
+			Player p = Bukkit.getPlayer("OfficialJoemp");
+			if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
+				e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");
+				e.setDamage(0.0);
+		    	e.setCancelled(true);
+		    	return;
+			}
 	      }
 		
 	}
@@ -405,25 +416,32 @@ public class EventSystem implements Listener{
 	    if(entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world") || 
 				entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world_the_end")) {
 	    	Player p = Bukkit.getPlayer("boykev");
-	    	e.setDamage(0.0);
-	    	p.setHealth(p.getMaxHealth());
-			e.setCancelled(true);
-	    	  return;
+	    	
+	    	if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
+	    		e.setDamage(0.0);
+		    	p.setHealth(p.getMaxHealth());
+				e.setCancelled(true);
+		    	return;
+	    	}
 	      }
 	    if(entity.getName().equalsIgnoreCase("Herman_Brood") && world.getName().equals("world_nether")) {
 	    	Player p = Bukkit.getPlayer("Herman_Brood");
-			e.setDamage(0.0);
-			p.setHealth(p.getMaxHealth());
-			e.setCancelled(true);
-	    	  return;
+	    	if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
+	    		e.setDamage(0.0);
+		    	p.setHealth(p.getMaxHealth());
+				e.setCancelled(true);
+		    	return;
+	    	}
 	      }
 		
 		if(entity.getName().equalsIgnoreCase("OfficialJoemp") && world.getName().equals("world_nether")) {
 			Player p = Bukkit.getPlayer("OfficialJoemp");
-			e.setDamage(0.0);
-			p.setHealth(p.getMaxHealth());
-			e.setCancelled(true);
-	    	  return;
+			if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
+	    		e.setDamage(0.0);
+		    	p.setHealth(p.getMaxHealth());
+				e.setCancelled(true);
+		    	return;
+	    	}
 	      }
 		Player p = Bukkit.getPlayer(entity.getName());
 		if(p == null) { return; }

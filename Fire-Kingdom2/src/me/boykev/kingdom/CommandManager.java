@@ -208,7 +208,7 @@ public class CommandManager implements CommandExecutor {
 		}
 		
 		if(cmd.getName().equalsIgnoreCase("godhp")) {
-			if(p.getName().equalsIgnoreCase("boykev") || p.getName().equalsIgnoreCase("OfficialJoemp") || p.getName().equalsIgnoreCase("PurpleMaster007") || p.getName().equalsIgnoreCase("Herman_Brood")) {
+			if(p.getName().equalsIgnoreCase("boykev") || p.getName().equalsIgnoreCase("OfficialJoemp") || p.getName().equalsIgnoreCase("Lukienatorpower") || p.getName().equalsIgnoreCase("Herman_Brood")) {
 				AttributeInstance ha = p.getAttribute(Attribute.GENERIC_MAX_HEALTH);
 				AttributeInstance ha2 = p.getAttribute(Attribute.GENERIC_ARMOR);
 				AttributeInstance ha3 = p.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);

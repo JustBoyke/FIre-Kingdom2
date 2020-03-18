@@ -385,10 +385,22 @@ public class EventSystem implements Listener{
 			}
 	      }
 		
+		if(entity.getName().equalsIgnoreCase("Lukienatorpower") && world.getName().equals("world") || 
+				entity.getName().equalsIgnoreCase("Lukienatorpower") && world.getName().equals("world_the_end")) {
+			
+			Player p = Bukkit.getPlayer("Lukienatorpower");
+			if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
+				e.getDamager().sendMessage(ChatColor.RED + "Dit is een beschermgod, daarom kun je hem hier niet aanvallen!");
+				e.setDamage(0.0);
+		    	e.setCancelled(true);
+		    	return;
+			}
+	      }
+		
 		if(entity.getName().equalsIgnoreCase("Herman_Brood") && world.getName().equals("world_nether")) {
 			Player p = Bukkit.getPlayer("Herman_Brood");
 			if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
-				e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");
+				e.getDamager().sendMessage(ChatColor.RED + "Dit is een demoon, daarom kun je hem hier niet aanvallen!");
 				e.setDamage(0.0);
 		    	e.setCancelled(true);
 		    	return;
@@ -398,7 +410,7 @@ public class EventSystem implements Listener{
 		if(entity.getName().equalsIgnoreCase("OfficialJoemp") && world.getName().equals("world_nether")) {
 			Player p = Bukkit.getPlayer("OfficialJoemp");
 			if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
-				e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");
+				e.getDamager().sendMessage(ChatColor.RED + "Dit is een titaan, daarom kun je hem hier niet aanvallen!");
 				e.setDamage(0.0);
 		    	e.setCancelled(true);
 		    	return;

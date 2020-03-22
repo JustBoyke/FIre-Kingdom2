@@ -224,7 +224,26 @@ public class CommandManager implements CommandExecutor {
 				p.setHealth(140.0);
 				return false;
 			}
-			p.sendMessage(ChatColor.RED + "Dit commando is alleen beschikbaar voor goden! Ben je van mening dat dit een fout is, neem contact op met de PL");
+			
+			
+			if(p.getName().equalsIgnoreCase("Aquilaaaaa")) {
+				AttributeInstance ha = p.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+				AttributeInstance ha2 = p.getAttribute(Attribute.GENERIC_ARMOR);
+				AttributeInstance ha3 = p.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);
+				if(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() > 20.0) {
+					ha.setBaseValue(ha.getDefaultValue());
+					ha2.setBaseValue(ha2.getDefaultValue());
+					ha3.setBaseValue(ha3.getDefaultValue());
+					return false;
+				}
+				ha.setBaseValue(60.0);
+				ha2.setBaseValue(120.0);
+				ha3.setBaseValue(120.0);
+				p.setHealth(60.0);
+				return false;
+			}
+						
+			p.sendMessage(ChatColor.RED + "Dit commando is alleen beschikbaar voor goden en halfgoden! Ben je van mening dat dit een fout is, neem contact op met de PL");
 			return false;
 		}
 		if(cmd.getName().equalsIgnoreCase("kdsetcolor")) {

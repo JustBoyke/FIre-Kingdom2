@@ -455,9 +455,28 @@ public class EventSystem implements Listener{
 		    	return;
 	    	}
 	      }
+		if(entity.getName().equalsIgnoreCase("Lukienatorpower") && world.getName().equals("world") || 
+				entity.getName().equalsIgnoreCase("Lukienatorpower") && world.getName().equals("world_the_end")) {
+	    	Player p = Bukkit.getPlayer("Lukienatorpower");
+	    	
+	    	if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
+	    		e.setDamage(0.0);
+		    	p.setHealth(p.getMaxHealth());
+				e.setCancelled(true);
+		    	return;
+	    	}
+	      }
+		
 		Player p = Bukkit.getPlayer(entity.getName());
 		if(p == null) { return; }
 		if(p.getName().equalsIgnoreCase("CatloverAnouk")){
+			if (e.getCause().equals(DamageCause.FALL)){
+				e.setDamage(0.0);
+				e.setCancelled(false);
+				return;
+			}
+		}
+		if(p.getName().equalsIgnoreCase("Aquilaaaaa")){
 			if (e.getCause().equals(DamageCause.FALL)){
 				e.setDamage(0.0);
 				e.setCancelled(false);

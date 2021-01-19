@@ -195,7 +195,7 @@ public class EventSystem implements Listener{
 					ItemStack h1 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Hertog", list, Material.DIAMOND_BLOCK, 1);
 					ItemStack h2 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Raadgever", list, Material.IRON_BLOCK, 1);
 					ItemStack h3 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Handelaar", list, Material.GOLD_BLOCK, 1);
-					ItemStack h4 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Tovenaar", list, Material.POTION, 1);
+					ItemStack h4 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Stuurmeester", list, Material.POTION, 1);
 					ItemStack h5 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Dorpeling", list, Material.STONE, 1);
 					
 					
@@ -318,7 +318,7 @@ public class EventSystem implements Listener{
 				return;
 			}
 			
-			if(item.getType() == Material.POTION && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_GREEN + "Tovenaar")) {
+			if(item.getType() == Material.POTION && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_GREEN + "Stuurmeester")) {
 				List<String> lore = item.getItemMeta().getLore();
 				String pl = ChatColor.stripColor(lore.get(1).toString());
 				Player player = Bukkit.getPlayer(pl);
@@ -326,10 +326,10 @@ public class EventSystem implements Listener{
 					p.sendMessage(ChatColor.RED + "Er is iets fout gegaan, contact een admin!");
 					return;
 				}
-				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Tovenaar gezet!");
-				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Tovenaar!");
+				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Stuurmeester gezet!");
+				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Stuurmeester!");
 				KingdomUser ku = kapi.getUserHandler().getUser(player);
-				ku.setRank("Tovenaar");
+				ku.setRank("Stuurmeester");
 				kapi.getUserHandler().save(ku);
 				p.closeInventory();
 				return;

@@ -196,7 +196,7 @@ public class EventSystem implements Listener{
 					ItemStack h2 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Raadgever", list, Material.IRON_BLOCK, 1);
 					ItemStack h3 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Handelaar", list, Material.GOLD_BLOCK, 1);
 					ItemStack h4 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Stuurmeester", list, Material.POTION, 1);
-					ItemStack h5 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Dorpeling", list, Material.STONE, 1);
+					ItemStack h5 = KoningenSysteem.makeItem(ChatColor.GRAY + "Dorpeling", list, Material.STONE, 1);
 					
 					
 					uinv.setItem(0, h5);

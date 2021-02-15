@@ -89,15 +89,13 @@ public class CommandManager implements CommandExecutor {
 				return false;
 			}
 			Inventory menu = this.createInv(p);
-			ItemStack kd1 = this.mikeItem("Noord", p, Material.JUNGLE_WOOD_STAIRS);
-			ItemStack kd2 = this.mikeItem("Oost", p, Material.STONE);
-			ItemStack kd3 = this.mikeItem("Zuid", p, Material.ACACIA_STAIRS);
-			ItemStack kd4 = this.mikeItem("West", p, Material.GRASS);
+			ItemStack kd1 = this.mikeItem("Scandinavie", p, Material.STONE);
+			ItemStack kd2 = this.mikeItem("West-Amerika", p, Material.SAND);
+			ItemStack kd3 = this.mikeItem("Afrika", p, Material.DEAD_BUSH);
 			
 			menu.setItem(0, kd1);
 			menu.setItem(1, kd2);
 			menu.setItem(2, kd3);
-			menu.setItem(3, kd4);
 			p.openInventory(menu);
 			
 		}
@@ -223,26 +221,7 @@ public class CommandManager implements CommandExecutor {
 				ha3.setBaseValue(120.0);
 				p.setHealth(140.0);
 				return false;
-			}
-			
-			
-			if(p.getName().equalsIgnoreCase("Aquilaaaaa")) {
-				AttributeInstance ha = p.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-				AttributeInstance ha2 = p.getAttribute(Attribute.GENERIC_ARMOR);
-				AttributeInstance ha3 = p.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);
-				if(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() > 20.0) {
-					ha.setBaseValue(ha.getDefaultValue());
-					ha2.setBaseValue(ha2.getDefaultValue());
-					ha3.setBaseValue(ha3.getDefaultValue());
-					return false;
-				}
-				ha.setBaseValue(60.0);
-				ha2.setBaseValue(120.0);
-				ha3.setBaseValue(120.0);
-				p.setHealth(60.0);
-				return false;
-			}
-						
+			}						
 			p.sendMessage(ChatColor.RED + "Dit commando is alleen beschikbaar voor goden en halfgoden! Ben je van mening dat dit een fout is, neem contact op met de PL");
 			return false;
 		}

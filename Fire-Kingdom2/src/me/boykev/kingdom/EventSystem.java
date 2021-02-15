@@ -59,6 +59,7 @@ public class EventSystem implements Listener{
 	}
 	
 	public int loadBalance() {
+		Bukkit.broadcastMessage("test3");
 		List<KingdomUser> scand = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Scandinavie"));
 		List<KingdomUser> wam = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("West-Amerika"));
 		List<KingdomUser> af = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Afrika"));
@@ -72,10 +73,10 @@ public class EventSystem implements Listener{
 	}
 	
 	public boolean theBalancer(String kingdom) {
-		List<KingdomUser> kd = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("kingdom"));
+		Bukkit.broadcastMessage("test4");
+		List<KingdomUser> kd = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom(kingdom));
 		int kdcount = kd.size();
 		int balancecount = this.loadBalance();
-		
 		if(kdcount > balancecount) {
 			return false;
 		}
@@ -90,24 +91,23 @@ public class EventSystem implements Listener{
 		cm = new ConfigManager(instance);
 		um = new UserManager(instance, p);
 		if(inv.getName().equals(ChatColor.RED + "Kingdom Selector")) {
-			if(e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || e.getAction() == InventoryAction.HOTBAR_SWAP || e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
-				e.setCancelled(true);
-				return;
-			}
+			e.setCancelled(true);
 				if(item.getType() == Material.STONE && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "Scandinavie")) {
+					Bukkit.broadcastMessage("test2");
 					if(this.theBalancer("Scandinavie") == false) {
+						Bukkit.broadcastMessage("test1");
 						p.sendMessage(ChatColor.RED + "Dit kingdom is momenteel vol, probeer een andere te joinen");
 						return;
 					}
 					um.editConfig().set("status.kingdom", "Scandinavie");
 					um.save();
-					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.Scandinavie.world"));
-					double x = cm.getConfig().getDouble("kdspawn.Scandinavie.x");
-					double y = cm.getConfig().getDouble("kdspawn.Scandinavie.y");
-					double z = cm.getConfig().getDouble("kdspawn.Scandinavie.z");
+					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.scandinavie.world"));
+					double x = cm.getConfig().getDouble("kdspawn.scandinavie.x");
+					double y = cm.getConfig().getDouble("kdspawn.scandinavie.y");
+					double z = cm.getConfig().getDouble("kdspawn.scandinavie.z");
 					Location loc = new Location(world,x,y,z);
 					KingdomUser user = kapi.getUserHandler().getUser(p);
-					Kingdom kd = kapi.getKingdomHandler().getKingdom(um.getConfig().getString("status.kingdom").toLowerCase());
+					Kingdom kd = kapi.getKingdomHandler().getKingdom("Scandinavie");
 					kapi.getUserHandler().setKingdom(user, kd);
 					p.teleport(loc);
 					return;
@@ -119,13 +119,13 @@ public class EventSystem implements Listener{
 					}
 					um.editConfig().set("status.kingdom", "West-Amerika");
 					um.save();
-					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.West-Amerika.world"));
-					double x = cm.getConfig().getDouble("kdspawn.West-Amerika.x");
-					double y = cm.getConfig().getDouble("kdspawn.West-Amerika.y");
-					double z = cm.getConfig().getDouble("kdspawn.West-Amerika.z");
+					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.west-amerika.world"));
+					double x = cm.getConfig().getDouble("kdspawn.west-amerika.x");
+					double y = cm.getConfig().getDouble("kdspawn.West-amerika.y");
+					double z = cm.getConfig().getDouble("kdspawn.west-amerika.z");
 					Location loc = new Location(world,x,y,z);
 					KingdomUser user = kapi.getUserHandler().getUser(p);
-					Kingdom kd = kapi.getKingdomHandler().getKingdom(um.getConfig().getString("status.kingdom").toLowerCase());
+					Kingdom kd = kapi.getKingdomHandler().getKingdom("West-Amerika");
 					kapi.getUserHandler().setKingdom(user, kd);
 					p.teleport(loc);
 					return;
@@ -137,13 +137,13 @@ public class EventSystem implements Listener{
 					}
 					um.editConfig().set("status.kingdom", "Afrika");
 					um.save();
-					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.Afrika.world"));
-					double x = cm.getConfig().getDouble("kdspawn.Afrika.x");
-					double y = cm.getConfig().getDouble("kdspawn.Afrika.y");
-					double z = cm.getConfig().getDouble("kdspawn.Afrika.z");
+					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.afrika.world"));
+					double x = cm.getConfig().getDouble("kdspawn.afrika.x");
+					double y = cm.getConfig().getDouble("kdspawn.afrika.y");
+					double z = cm.getConfig().getDouble("kdspawn.afrika.z");
 					Location loc = new Location(world,x,y,z);
 					KingdomUser user = kapi.getUserHandler().getUser(p);
-					Kingdom kd = kapi.getKingdomHandler().getKingdom(um.getConfig().getString("status.kingdom").toLowerCase());
+					Kingdom kd = kapi.getKingdomHandler().getKingdom("Afrika");
 					kapi.getUserHandler().setKingdom(user, kd);
 					p.teleport(loc);
 					return;

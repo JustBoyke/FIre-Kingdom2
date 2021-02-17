@@ -258,33 +258,33 @@ public class CommandManager implements CommandExecutor {
 			
 		}
 		
-//		if(cmd.getName().equalsIgnoreCase("kd-kick")) {
-//			if(args.length < 1) {
-//				p.sendMessage(ChatColor.RED + "Dit commando is niet juist gebruikt! " + ChatColor.GREEN + "/kd-kick [speler]");
-//				return false;
-//			}
-//			Player target = Bukkit.getPlayer(args[0]);
-//			if(target == null) {
-//				p.sendMessage(ChatColor.RED + "Dit commando is niet juist gebruikt! " + ChatColor.GREEN + "/kd-kick [speler]");
-//				return false;
-//			}
-//			String ownkd = um.getConfig().getString("status.kingdom");
-//			String otherkd = checkOther(target, "status.kingdom");
-//			
-//			if(ownkd == otherkd || p.hasPermission("kingdom.admin")) {
-//				if(p.hasPermission("kingdom.koning")) {
-//					Bukkit.getServer().dispatchCommand(p, "kd kick " + target.getName());
-//					editOther(target, "status.kingdom", "NO-KD");
-//					p.sendMessage(ChatColor.GREEN + "Je hebt " + ChatColor.RED + target.getName() + ChatColor.GREEN + " uit je kingdom verwijderd! ");
-//					return false;
-//				}
-//				p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cERROR &e>>> &4Alleen een koning kan dit commando uitvoeren in je kingdom!"));
-//				target.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " verwijderd uit je kingdom!");
-//				return false;
-//			}
-//			p.sendMessage(ChatColor.RED + "Dit commando is alleen te gebruiken als je in een kingdom zit!");
-//			return false;
-//		}
+		if(cmd.getName().equalsIgnoreCase("kd-kick")) {
+			if(args.length < 1) {
+				p.sendMessage(ChatColor.RED + "Dit commando is niet juist gebruikt! " + ChatColor.GREEN + "/kd-kick [speler]");
+				return false;
+			}
+			Player target = Bukkit.getPlayer(args[0]);
+			if(target == null) {
+				p.sendMessage(ChatColor.RED + "Dit commando is niet juist gebruikt! " + ChatColor.GREEN + "/kd-kick [speler]");
+				return false;
+			}
+			String ownkd = um.getConfig().getString("status.kingdom");
+			String otherkd = checkOther(target, "status.kingdom");
+			
+			if(ownkd == otherkd || p.hasPermission("kingdom.admin")) {
+				if(p.hasPermission("kingdom.koning")) {
+					Bukkit.getServer().dispatchCommand(p, "kd kick " + target.getName());
+					editOther(target, "status.kingdom", "NO-KD");
+					p.sendMessage(ChatColor.GREEN + "Je hebt " + ChatColor.RED + target.getName() + ChatColor.GREEN + " uit je kingdom verwijderd! ");
+					return false;
+				}
+				p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cERROR &e>>> &4Alleen een koning kan dit commando uitvoeren in je kingdom!"));
+				target.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " verwijderd uit je kingdom!");
+				return false;
+			}
+			p.sendMessage(ChatColor.RED + "Dit commando is alleen te gebruiken als je in een kingdom zit!");
+			return false;
+		}
 		
 		return false;
 	}

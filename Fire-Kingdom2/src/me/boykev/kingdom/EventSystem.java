@@ -59,7 +59,6 @@ public class EventSystem implements Listener{
 	}
 	
 	public int loadBalance() {
-		Bukkit.broadcastMessage("test3");
 		List<KingdomUser> scand = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Scandinavie"));
 		List<KingdomUser> wam = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("West-Amerika"));
 		List<KingdomUser> af = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Afrika"));
@@ -73,7 +72,6 @@ public class EventSystem implements Listener{
 	}
 	
 	public boolean theBalancer(String kingdom) {
-		Bukkit.broadcastMessage("test4");
 		List<KingdomUser> kd = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom(kingdom));
 		int kdcount = kd.size();
 		int balancecount = this.loadBalance();
@@ -93,7 +91,6 @@ public class EventSystem implements Listener{
 		if(inv.getName().equals(ChatColor.RED + "Kingdom Selector")) {
 			e.setCancelled(true);
 				if(item.getType() == Material.STONE && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "Scandinavie")) {
-					Bukkit.broadcastMessage("test2");
 					if(this.theBalancer("Scandinavie") == false) {
 						Bukkit.broadcastMessage("test1");
 						p.sendMessage(ChatColor.RED + "Dit kingdom is momenteel vol, probeer een andere te joinen");
@@ -113,7 +110,7 @@ public class EventSystem implements Listener{
 					return;
 				}
 				if(item.getType() == Material.SAND && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "West-Amerika")) {
-					if(this.theBalancer("Scandinavie") == false) {
+					if(this.theBalancer("West-Amerika") == false) {
 						p.sendMessage(ChatColor.RED + "Dit kingdom is momenteel vol, probeer een andere te joinen");
 						return;
 					}
@@ -131,7 +128,7 @@ public class EventSystem implements Listener{
 					return;
 				}
 				if(item.getType() == Material.DEAD_BUSH && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "Afrika")) {
-					if(this.theBalancer("Scandinavie") == false) {
+					if(this.theBalancer("Afrika") == false) {
 						p.sendMessage(ChatColor.RED + "Dit kingdom is momenteel vol, probeer een andere te joinen");
 						return;
 					}

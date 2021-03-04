@@ -89,9 +89,9 @@ public class CommandManager implements CommandExecutor {
 				return false;
 			}
 			Inventory menu = this.createInv(p);
-			ItemStack kd1 = this.mikeItem("Scandinavie", p, Material.STONE);
-			ItemStack kd2 = this.mikeItem("West-Amerika", p, Material.SAND);
-			ItemStack kd3 = this.mikeItem("Afrika", p, Material.DEAD_BUSH);
+			ItemStack kd1 = this.mikeItem("Nagard", p, Material.STONE);
+			ItemStack kd2 = this.mikeItem("Histria", p, Material.SAND);
+			ItemStack kd3 = this.mikeItem("Ravary", p, Material.DEAD_BUSH);
 			
 			menu.setItem(0, kd1);
 			menu.setItem(1, kd2);
@@ -206,7 +206,7 @@ public class CommandManager implements CommandExecutor {
 		}
 		
 		if(cmd.getName().equalsIgnoreCase("godhp")) {
-			if(p.getName().equalsIgnoreCase("boykev") || p.getName().equalsIgnoreCase("OfficialJoemp") || p.getName().equalsIgnoreCase("Lukienatorpower") || p.getName().equalsIgnoreCase("Herman_Brood")) {
+			if(p.getName().equalsIgnoreCase("MyrAdonis")) {
 				AttributeInstance ha = p.getAttribute(Attribute.GENERIC_MAX_HEALTH);
 				AttributeInstance ha2 = p.getAttribute(Attribute.GENERIC_ARMOR);
 				AttributeInstance ha3 = p.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);

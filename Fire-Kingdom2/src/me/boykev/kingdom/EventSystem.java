@@ -59,8 +59,8 @@ public class EventSystem implements Listener{
 	}
 	
 	public int loadBalance() {
-		List<KingdomUser> scand = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Scandinavie"));
-		List<KingdomUser> wam = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("West-Amerika"));
+		List<KingdomUser> scand = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Nagard"));
+		List<KingdomUser> wam = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Histria"));
 		List<KingdomUser> af = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Afrika"));
 		int kd1 = scand.size();
 		int kd2 = wam.size();
@@ -90,57 +90,57 @@ public class EventSystem implements Listener{
 		um = new UserManager(instance, p);
 		if(inv.getName().equals(ChatColor.RED + "Kingdom Selector")) {
 			e.setCancelled(true);
-				if(item.getType() == Material.STONE && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "Scandinavie")) {
+				if(item.getType() == Material.STONE && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "Nagard")) {
 					if(this.theBalancer("Scandinavie") == false) {
 						Bukkit.broadcastMessage("test1");
 						p.sendMessage(ChatColor.RED + "Dit kingdom is momenteel vol, probeer een andere te joinen");
 						return;
 					}
-					um.editConfig().set("status.kingdom", "Scandinavie");
+					um.editConfig().set("status.kingdom", "Nagard");
 					um.save();
-					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.scandinavie.world"));
-					double x = cm.getConfig().getDouble("kdspawn.scandinavie.x");
-					double y = cm.getConfig().getDouble("kdspawn.scandinavie.y");
-					double z = cm.getConfig().getDouble("kdspawn.scandinavie.z");
+					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.nagard.world"));
+					double x = cm.getConfig().getDouble("kdspawn.nagard.x");
+					double y = cm.getConfig().getDouble("kdspawn.nagard.y");
+					double z = cm.getConfig().getDouble("kdspawn.nagard.z");
 					Location loc = new Location(world,x,y,z);
 					KingdomUser user = kapi.getUserHandler().getUser(p);
-					Kingdom kd = kapi.getKingdomHandler().getKingdom("Scandinavie");
+					Kingdom kd = kapi.getKingdomHandler().getKingdom("Nagard");
 					kapi.getUserHandler().setKingdom(user, kd);
 					p.teleport(loc);
 					return;
 				}
-				if(item.getType() == Material.SAND && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "West-Amerika")) {
-					if(this.theBalancer("West-Amerika") == false) {
+				if(item.getType() == Material.SAND && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "Histria")) {
+					if(this.theBalancer("Histria") == false) {
 						p.sendMessage(ChatColor.RED + "Dit kingdom is momenteel vol, probeer een andere te joinen");
 						return;
 					}
-					um.editConfig().set("status.kingdom", "West-Amerika");
+					um.editConfig().set("status.kingdom", "Histria");
 					um.save();
-					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.west-amerika.world"));
-					double x = cm.getConfig().getDouble("kdspawn.west-amerika.x");
-					double y = cm.getConfig().getDouble("kdspawn.West-amerika.y");
-					double z = cm.getConfig().getDouble("kdspawn.west-amerika.z");
+					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.histria.world"));
+					double x = cm.getConfig().getDouble("kdspawn.histria.x");
+					double y = cm.getConfig().getDouble("kdspawn.histria.y");
+					double z = cm.getConfig().getDouble("kdspawn.histria.z");
 					Location loc = new Location(world,x,y,z);
 					KingdomUser user = kapi.getUserHandler().getUser(p);
-					Kingdom kd = kapi.getKingdomHandler().getKingdom("West-Amerika");
+					Kingdom kd = kapi.getKingdomHandler().getKingdom("Histria");
 					kapi.getUserHandler().setKingdom(user, kd);
 					p.teleport(loc);
 					return;
 				}
-				if(item.getType() == Material.DEAD_BUSH && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "Afrika")) {
-					if(this.theBalancer("Afrika") == false) {
+				if(item.getType() == Material.DEAD_BUSH && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "Ravary")) {
+					if(this.theBalancer("Ravary") == false) {
 						p.sendMessage(ChatColor.RED + "Dit kingdom is momenteel vol, probeer een andere te joinen");
 						return;
 					}
-					um.editConfig().set("status.kingdom", "Afrika");
+					um.editConfig().set("status.kingdom", "Ravary");
 					um.save();
-					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.afrika.world"));
-					double x = cm.getConfig().getDouble("kdspawn.afrika.x");
-					double y = cm.getConfig().getDouble("kdspawn.afrika.y");
-					double z = cm.getConfig().getDouble("kdspawn.afrika.z");
+					World world = Bukkit.getWorld(cm.getConfig().getString("kdspawn.ravary.world"));
+					double x = cm.getConfig().getDouble("kdspawn.ravary.x");
+					double y = cm.getConfig().getDouble("kdspawn.ravary.y");
+					double z = cm.getConfig().getDouble("kdspawn.ravary.z");
 					Location loc = new Location(world,x,y,z);
 					KingdomUser user = kapi.getUserHandler().getUser(p);
-					Kingdom kd = kapi.getKingdomHandler().getKingdom("Afrika");
+					Kingdom kd = kapi.getKingdomHandler().getKingdom("Ravary");
 					kapi.getUserHandler().setKingdom(user, kd);
 					p.teleport(loc);
 					return;
@@ -380,7 +380,7 @@ public class EventSystem implements Listener{
 		if(p == null) {
 			return;
 		}
-		if(p.getName().equalsIgnoreCase("boykev")) {
+		if(p.getName().equalsIgnoreCase("MyrAdonis")) {
 			p.setFoodLevel(25);
 			e.setCancelled(true);
 			return;
@@ -388,45 +388,24 @@ public class EventSystem implements Listener{
 		
 	}
 	
-	@EventHandler
-	public void godenDamage(EntityDamageByEntityEvent  e) {
-		  Entity entity = e.getEntity();
-	      World world = entity.getWorld();
-		if(entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world") || 
-				entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world_the_end")) {
-			
-			Player p = Bukkit.getPlayer("boykev");
-			if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
-				e.getDamager().sendMessage(ChatColor.RED + "Dit is een god, daarom kun je hem hier niet aanvallen!");
-				e.setDamage(0.0);
-		    	e.setCancelled(true);
-		    	return;
-			}
-	      }
-		
-	}
-	
-	@SuppressWarnings("deprecation")
+
 	@EventHandler
 	public void godfallDamage(EntityDamageEvent e) {
 		Entity entity = e.getEntity();
-	    World world = entity.getWorld();
-	    
-	    if(entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world") || 
-				entity.getName().equalsIgnoreCase("boykev") && world.getName().equals("world_the_end")) {
-	    	Player p = Bukkit.getPlayer("boykev");
-	    	
+	    if(entity.getName().equalsIgnoreCase("MyrAdonis")) {
+	    	Player p = Bukkit.getPlayer("MyrAdonis");
 	    	if(!p.hasPotionEffect(PotionEffectType.WEAKNESS)) {
-	    		e.setDamage(0.0);
-		    	p.setHealth(p.getMaxHealth());
-				e.setCancelled(true);
-		    	return;
+	    		if (e.getCause().equals(DamageCause.FALL)){
+					e.setDamage(0.0);
+					e.setCancelled(true);
+					return;
+				}
 	    	}
 	      }
 		
 		Player p = Bukkit.getPlayer(entity.getName());
 		if(p == null) { return; }
-		if(p.getName().equalsIgnoreCase(".")){
+		if(p.getInventory().contains(Material.BLAZE_ROD)){
 			if (e.getCause().equals(DamageCause.FALL)){
 				e.setDamage(0.0);
 				e.setCancelled(false);

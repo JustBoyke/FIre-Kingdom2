@@ -2,6 +2,7 @@ name: Fire-Kingdom2
 version: 3.0
 main: me.boykev.kingdom.Main
 author: boykev
+depend: [KingdomCraft,KingdomCraftPremium]
 commands:
   kd-selector:
     description: Kingdom Selector Commando.

@@ -1,13 +1,12 @@
 package me.boykev.kingdom;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.igufguf.kingdomcraft.KingdomCraft;
-import com.igufguf.kingdomcraft.api.KingdomCraftApi;
-import com.igufguf.kingdomcraft.api.models.kingdom.Kingdom;
-import com.igufguf.kingdomcraft.api.models.kingdom.KingdomRank;
-import com.igufguf.kingdomcraft.api.models.kingdom.KingdomUser;
+import com.gufli.kingdomcraft.api.KingdomCraft;
+import com.gufli.kingdomcraft.api.KingdomCraftProvider;
+import com.gufli.kingdomcraft.api.domain.Kingdom;
+import com.gufli.kingdomcraft.api.domain.Rank;
+import com.gufli.kingdomcraft.api.domain.User;
 
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.md_5.bungee.api.ChatColor;
@@ -20,8 +19,7 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
     private Main plugin;
     private ConfigManager cm;
-    KingdomCraft kdc = (KingdomCraft) Bukkit.getPluginManager().getPlugin("KingdomCraft");
-	KingdomCraftApi kapi = kdc.getApi();
+    KingdomCraft kdc = KingdomCraftProvider.get();
 
     /**
      * Since we register the expansion inside our own plugin, we
@@ -118,8 +116,8 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
         // %someplugin_placeholder1%
         if(identifier.equals("kdname")){
-        	KingdomUser ku = kapi.getUserHandler().getUser(player);
-        	Kingdom kd = kapi.getKingdomHandler().getKingdom(ku.getKingdom());
+        	User ku = kdc.getOnlineUser(player.getName());
+        	Kingdom kd = ku.getKingdom();
         	if(kd == null) {
         		return ChatColor.GRAY + "Geen Kingdom";
         	}
@@ -129,19 +127,19 @@ public class PlaceholderAPI extends PlaceholderExpansion {
 
         // %someplugin_placeholder2%
         if(identifier.equals("kdrank")){
-        	KingdomUser ku = kapi.getUserHandler().getUser(player);
-        	Kingdom kd = kapi.getKingdomHandler().getKingdom(ku.getKingdom());
+        	User ku = kdc.getOnlineUser(player.getName());
+        	Kingdom kd = ku.getKingdom();
         	if(kd == null) {
         		return ChatColor.GRAY + "Geen Kingdom Rank";
         	}
-        	KingdomRank kr = kd.getRank(ku.getRank());
+        	Rank kr = ku.getRank();
         	String print = ChatColor.translateAlternateColorCodes('&', kr.getName());
         	return print;
         }
         
         if(identifier.equals("kd-color")) {
-        	KingdomUser ku = kapi.getUserHandler().getUser(player);
-        	Kingdom kd = kapi.getKingdomHandler().getKingdom(ku.getKingdom());
+        	User ku = kdc.getOnlineUser(player.getName());
+        	Kingdom kd = ku.getKingdom();
         	if(kd == null) {
         		return ChatColor.translateAlternateColorCodes('&', "&8");
         	}

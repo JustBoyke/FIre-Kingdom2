@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -22,13 +21,15 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
-import com.igufguf.kingdomcraft.KingdomCraft;
-import com.igufguf.kingdomcraft.api.KingdomCraftApi;
-import com.igufguf.kingdomcraft.api.models.kingdom.Kingdom;
-import com.igufguf.kingdomcraft.api.models.kingdom.KingdomUser;
-
+import com.gufli.kingdomcraft.api.KingdomCraft;
+import com.gufli.kingdomcraft.api.KingdomCraftProvider;
+import com.gufli.kingdomcraft.api.domain.Kingdom;
+import com.gufli.kingdomcraft.api.domain.Rank;
+import com.gufli.kingdomcraft.api.domain.User;
 import net.md_5.bungee.api.ChatColor;
 
 public class EventSystem implements Listener{
@@ -37,8 +38,7 @@ public class EventSystem implements Listener{
 		EventSystem.instance = main;
 	}
 	
-	KingdomCraft kdc = (KingdomCraft) Bukkit.getPluginManager().getPlugin("KingdomCraft");
-	KingdomCraftApi kapi = kdc.getApi();
+	KingdomCraft kdc = KingdomCraftProvider.get();
 	
 	private static Main instance;
 	private static UserManager um;
@@ -58,22 +58,46 @@ public class EventSystem implements Listener{
 		}
 	}
 	
+	@EventHandler
+	public void onJoinSetKingdom(PlayerJoinEvent e) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				um = new UserManager(instance, e.getPlayer());
+				if(um.getConfig().getString("status.kingdom") != "NO-KD") {
+					String name = um.getConfig().getString("status.kingdom").toLowerCase();
+					Kingdom kd = kdc.getKingdom(name);
+					User user = kdc.getOnlineUser(e.getPlayer().getName());
+					System.out.println(user.getName());
+					if(user.getKingdom() == null) {
+						user.setKingdom(kd);
+						e.getPlayer().sendMessage(ChatColor.DARK_PURPLE + "Je kingdom werdt automatisch aangepast ivm een systeem update. Indien je rank niet meer klopt, contact je koning of staff!");
+						kdc.saveAsync(user);
+					}
+					if(user.getKingdom().getName().equalsIgnoreCase(name)) {
+						return;
+					}
+					
+					user.setKingdom(kd);
+					e.getPlayer().sendMessage(ChatColor.DARK_PURPLE + "Je kingdom werdt automatisch aangepast ivm een systeem update. Indien je rank niet meer klopt, contact je koning of staff!");
+					kdc.saveAsync(user);
+				}
+			}
+		}.runTaskLater(instance, 60);
+	}
+	
 	public int loadBalance() {
-		List<KingdomUser> scand = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Nagard"));
-		List<KingdomUser> wam = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Histria"));
-		List<KingdomUser> af = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom("Afrika"));
-		int kd1 = scand.size();
-		int kd2 = wam.size();
-		int kd3 = af.size();
+		int scand = kdc.getKingdom("Nagard").getMemberCount();
+		int wam = kdc.getKingdom("Histria").getMemberCount();
+		int af = kdc.getKingdom("Ravary").getMemberCount();
 		
-		int calc1 = kd1 + kd2 + kd3;
+		int calc1 = scand + wam + af;
 		int calc2 = (calc1 / 3) + 1;
 		return calc2;
 	}
 	
 	public boolean theBalancer(String kingdom) {
-		List<KingdomUser> kd = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom(kingdom));
-		int kdcount = kd.size();
+		int kdcount = kdc.getKingdom(kingdom).getMemberCount();
 		int balancecount = this.loadBalance();
 		if(kdcount > balancecount) {
 			return false;
@@ -91,7 +115,7 @@ public class EventSystem implements Listener{
 		if(inv.getName().equals(ChatColor.RED + "Kingdom Selector")) {
 			e.setCancelled(true);
 				if(item.getType() == Material.STONE && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "Nagard")) {
-					if(this.theBalancer("Scandinavie") == false) {
+					if(this.theBalancer("Nagard") == false) {
 						Bukkit.broadcastMessage("test1");
 						p.sendMessage(ChatColor.RED + "Dit kingdom is momenteel vol, probeer een andere te joinen");
 						return;
@@ -103,9 +127,9 @@ public class EventSystem implements Listener{
 					double y = cm.getConfig().getDouble("kdspawn.nagard.y");
 					double z = cm.getConfig().getDouble("kdspawn.nagard.z");
 					Location loc = new Location(world,x,y,z);
-					KingdomUser user = kapi.getUserHandler().getUser(p);
-					Kingdom kd = kapi.getKingdomHandler().getKingdom("Nagard");
-					kapi.getUserHandler().setKingdom(user, kd);
+					User onlineUser = kdc.getOnlineUser(p.getName());
+					Kingdom kd = kdc.getKingdom("Nagard");
+					onlineUser.setKingdom(kd);
 					p.teleport(loc);
 					return;
 				}
@@ -121,9 +145,9 @@ public class EventSystem implements Listener{
 					double y = cm.getConfig().getDouble("kdspawn.histria.y");
 					double z = cm.getConfig().getDouble("kdspawn.histria.z");
 					Location loc = new Location(world,x,y,z);
-					KingdomUser user = kapi.getUserHandler().getUser(p);
-					Kingdom kd = kapi.getKingdomHandler().getKingdom("Histria");
-					kapi.getUserHandler().setKingdom(user, kd);
+					User onlineUser = kdc.getOnlineUser(p.getName());
+					Kingdom kd = kdc.getKingdom("Histria");
+					onlineUser.setKingdom(kd);
 					p.teleport(loc);
 					return;
 				}
@@ -139,9 +163,9 @@ public class EventSystem implements Listener{
 					double y = cm.getConfig().getDouble("kdspawn.ravary.y");
 					double z = cm.getConfig().getDouble("kdspawn.ravary.z");
 					Location loc = new Location(world,x,y,z);
-					KingdomUser user = kapi.getUserHandler().getUser(p);
-					Kingdom kd = kapi.getKingdomHandler().getKingdom("Ravary");
-					kapi.getUserHandler().setKingdom(user, kd);
+					User onlineUser = kdc.getOnlineUser(p.getName());
+					Kingdom kd = kdc.getKingdom("Ravary");
+					onlineUser.setKingdom(kd);
 					p.teleport(loc);
 					return;
 				}
@@ -180,11 +204,11 @@ public class EventSystem implements Listener{
 					editOther(player, "status.kingdom", "NO-KD");
 					player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " uit het Kingdom gezet!");
 					p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol verwijderd uit je kingdom!");
-					KingdomUser ku = kapi.getUserHandler().getUser(player);
+					User ku = kdc.getOnlineUser(p.getName());
 					ku.setKingdom(null);
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kd kick " + player.getName());
 					p.closeInventory();
-					kapi.getUserHandler().save(ku);
+					kdc.saveAsync(ku);
 					String kd = um.getConfig().getString("status.kingdom");
 					if(cm.getConfig().getConfigurationSection("limit." + kd.toLowerCase()) != null) {
 						Integer current = cm.getConfig().getInt("players." + kd.toLowerCase());
@@ -245,9 +269,10 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar generaal gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Generaal!");
-				KingdomUser ku = kapi.getUserHandler().getUser(player);
-				ku.setRank("Generaal");
-				kapi.getUserHandler().save(ku);
+				User ku = kdc.getOnlineUser(p.getName());
+				Rank ra = ku.getKingdom().getRank("Generaal");
+				ku.setRank(ra);
+				kdc.saveAsync(ku);
 				p.closeInventory();
 				return;
 			}
@@ -262,9 +287,10 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Luitenant gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Luitenant!");
-				KingdomUser ku = kapi.getUserHandler().getUser(player);
-				ku.setRank("Luitenant");
-				kapi.getUserHandler().save(ku);
+				User ku = kdc.getOnlineUser(p.getName());
+				Rank ra = ku.getKingdom().getRank("Luitenant");
+				ku.setRank(ra);
+				kdc.saveAsync(ku);
 				p.closeInventory();
 				return;
 			}
@@ -278,10 +304,11 @@ public class EventSystem implements Listener{
 					return;
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar soldaat gezet!");
-				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Soldaat!");
-				KingdomUser ku = kapi.getUserHandler().getUser(player);
-				ku.setRank("Soldaat");
-				kapi.getUserHandler().save(ku);
+				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Soldaat!");			
+				User ku = kdc.getOnlineUser(p.getName());
+				Rank ra = ku.getKingdom().getRank("Soldaat");
+				ku.setRank(ra);
+				kdc.saveAsync(ku);
 				p.closeInventory();
 				return;
 			}
@@ -296,9 +323,10 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Hertog gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Hertog!");
-				KingdomUser ku = kapi.getUserHandler().getUser(player);
-				ku.setRank("Hertog");
-				kapi.getUserHandler().save(ku);
+				User ku = kdc.getOnlineUser(p.getName());
+				Rank ra = ku.getKingdom().getRank("Hertog");
+				ku.setRank(ra);
+				kdc.saveAsync(ku);
 				p.closeInventory();
 				return;
 			}
@@ -313,9 +341,10 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Raadgever gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Raadgever!");
-				KingdomUser ku = kapi.getUserHandler().getUser(player);
-				ku.setRank("Raadgever");
-				kapi.getUserHandler().save(ku);
+				User ku = kdc.getOnlineUser(p.getName());
+				Rank ra = ku.getKingdom().getRank("Raadgever");
+				ku.setRank(ra);
+				kdc.saveAsync(ku);
 				p.closeInventory();
 				return;
 			}
@@ -330,9 +359,10 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Handelaar gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Handelaar!");
-				KingdomUser ku = kapi.getUserHandler().getUser(player);
-				ku.setRank("Handelaar");
-				kapi.getUserHandler().save(ku);
+				User ku = kdc.getOnlineUser(p.getName());
+				Rank ra = ku.getKingdom().getRank("Handelaar");
+				ku.setRank(ra);
+				kdc.saveAsync(ku);
 				p.closeInventory();
 				return;
 			}
@@ -347,9 +377,10 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Stuurmeester gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Stuurmeester!");
-				KingdomUser ku = kapi.getUserHandler().getUser(player);
-				ku.setRank("Stuurmeester");
-				kapi.getUserHandler().save(ku);
+				User ku = kdc.getOnlineUser(p.getName());
+				Rank ra = ku.getKingdom().getRank("Stuurmeester");
+				ku.setRank(ra);
+				kdc.saveAsync(ku);
 				p.closeInventory();
 				return;
 			}
@@ -364,9 +395,10 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Dorpeling gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Dorpeling!");
-				KingdomUser ku = kapi.getUserHandler().getUser(player);
-				ku.setRank("Dorpeling");
-				kapi.getUserHandler().save(ku);
+				User ku = kdc.getOnlineUser(p.getName());
+				Rank ra = ku.getKingdom().getRank("Dorpeling");
+				ku.setRank(ra);
+				kdc.saveAsync(ku);
 				p.closeInventory();
 				return;
 			}
@@ -380,7 +412,7 @@ public class EventSystem implements Listener{
 		if(p == null) {
 			return;
 		}
-		if(p.getName().equalsIgnoreCase("MyrAdonis")) {
+		if(p.getName().equalsIgnoreCase("MyrAdonis") || p.getName().equalsIgnoreCase("Saampje")) {
 			p.setFoodLevel(25);
 			e.setCancelled(true);
 			return;
@@ -389,6 +421,7 @@ public class EventSystem implements Listener{
 	}
 	
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void godfallDamage(EntityDamageEvent e) {
 		Entity entity = e.getEntity();
@@ -405,6 +438,20 @@ public class EventSystem implements Listener{
 		
 		Player p = Bukkit.getPlayer(entity.getName());
 		if(p == null) { return; }
+		
+		
+		if(e.getCause().equals(DamageCause.FALL)) {
+			ItemStack watch = new ItemStack(Material.WATCH);
+			if(p.getInventory().getItemInHand() == watch) {
+				ItemMeta im = p.getInventory().getItemInHand().getItemMeta();
+				if(im.getDisplayName().equalsIgnoreCase(ChatColor.DARK_GRAY + "Theros Dagger")) {
+					e.setDamage(0.0);
+					e.setCancelled(false);
+					return;
+				}
+			}
+		}
+		
 		if(p.getInventory().contains(Material.BLAZE_ROD)){
 			if (e.getCause().equals(DamageCause.FALL)){
 				e.setDamage(0.0);

@@ -2,8 +2,6 @@ package me.boykev.kingdom;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,9 +16,9 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.igufguf.kingdomcraft.KingdomCraft;
-import com.igufguf.kingdomcraft.api.KingdomCraftApi;
-import com.igufguf.kingdomcraft.api.models.kingdom.Kingdom;
+import com.gufli.kingdomcraft.api.KingdomCraft;
+import com.gufli.kingdomcraft.api.KingdomCraftProvider;
+import com.gufli.kingdomcraft.api.domain.Kingdom;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -30,11 +28,9 @@ public class CommandManager implements CommandExecutor {
 	private ConfigManager cm;
 	private static UserManager um;
 	private int kdspawntime = 60;
-	private int kdspawntime2 = 1800;
 	public HashMap<String, Long> kdspawnc = new HashMap<String, Long>();
 	public HashMap<String, Long> kdspawnc2 = new HashMap<String, Long>();
-	KingdomCraft kdc = (KingdomCraft) Bukkit.getPluginManager().getPlugin("KingdomCraft");
-	KingdomCraftApi kapi = kdc.getApi();
+	KingdomCraft kdc = KingdomCraftProvider.get();
 
 	public CommandManager(Main main) {
 		CommandManager.instance = main;
@@ -188,14 +184,14 @@ public class CommandManager implements CommandExecutor {
 					p.sendMessage(ChatColor.RED + "Dit commando is niet juist gebruikt! " + ChatColor.GREEN + "/setkingdom [speler] [Kingdom]");
 					return false;
 				}
-				Kingdom kd = kapi.getKingdomHandler().getKingdom(args[1]);
+				Kingdom kd = kdc.getKingdom(args[1]);
 				if(kd == null) {
 					p.sendMessage(ChatColor.RED + "ERROR" + ChatColor.WHITE + " >> " + ChatColor.DARK_RED + "Dit kingdom bestaat niet in de config!: ");
 					return false;
 				}
 				
-				editOther(target, "status.kingdom", args[1].toUpperCase());
-				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "kd set " + target.getName() + " " + args[1]);
+				editOther(target, "status.kingdom", args[1]);
+				Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "kd setkingdom " + target.getName() + " " + args[1]);
 				
 				p.sendMessage(ChatColor.GREEN + "Kingdom van " + ChatColor.RED + target.getName() + ChatColor.GREEN + " aangepast naar: " + ChatColor.RED + args[1]);
 				
@@ -221,7 +217,23 @@ public class CommandManager implements CommandExecutor {
 				ha3.setBaseValue(120.0);
 				p.setHealth(140.0);
 				return false;
-			}						
+			}
+			if(p.getName().equalsIgnoreCase("Saampje")) {
+				AttributeInstance ha = p.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+				AttributeInstance ha2 = p.getAttribute(Attribute.GENERIC_ARMOR);
+				AttributeInstance ha3 = p.getAttribute(Attribute.GENERIC_ARMOR_TOUGHNESS);
+				if(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() > 20.0) {
+					ha.setBaseValue(ha.getDefaultValue());
+					ha2.setBaseValue(ha2.getDefaultValue());
+					ha3.setBaseValue(ha3.getDefaultValue());
+					return false;
+				}
+				ha.setBaseValue(110.0);
+				ha2.setBaseValue(100.0);
+				ha3.setBaseValue(100.0);
+				p.setHealth(110.0);
+				return false;
+			}
 			p.sendMessage(ChatColor.RED + "Dit commando is alleen beschikbaar voor goden en halfgoden! Ben je van mening dat dit een fout is, neem contact op met de PL");
 			return false;
 		}
@@ -235,27 +247,6 @@ public class CommandManager implements CommandExecutor {
 			String test = cm.getConfig().getString("colors." + arg1) + "test";
 			p.sendMessage("Kleur aangepast naar: " + color + " voor: " + arg1 + " " + ChatColor.translateAlternateColorCodes('&', test));
 			return false;
-		}
-		if(cmd.getName().equalsIgnoreCase("steal")) {
-			
-			if(kdspawnc2.containsKey(p.getName())) {
-				long left = ((kdspawnc.get(p.getName())/1000)+kdspawntime2) - (System.currentTimeMillis()/1000);
-				if(left > 0) {
-					p.sendMessage(ChatColor.RED + "Je moet nog " + left + " seconden wachten tot je weer een relic mag stelen, leg de huidige relic terug, doe je dit niet kan dit bannable zijn!");
-					return false;
-				}
-			}
-			String ukd = kapi.getUserHandler().getUser(p.getName()).getKingdom();
-			Kingdom kd = kapi.getKingdomHandler().getKingdom(ukd);
-			List<Player> cul = kapi.getKingdomHandler().getOnlineMembers(kd);
-			for(Player pl : cul) {
-				pl.sendMessage(ChatColor.RED + "/kdspawn is 30 minuten uitgescakeld voor je kingdom door het stelen van een relic!");
-				editOther(pl, "cooldowndata." + pl.getUniqueId().toString() + ".time", String.valueOf(System.currentTimeMillis()));
-				editOther(pl, "cooldowndata." + pl.getUniqueId().toString() + ".cooldown", "1800");
-			}
-			return false;
-			
-			
 		}
 		
 		if(cmd.getName().equalsIgnoreCase("kd-kick")) {

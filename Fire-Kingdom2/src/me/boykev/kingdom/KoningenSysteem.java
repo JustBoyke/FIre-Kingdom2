@@ -2,7 +2,6 @@ package me.boykev.kingdom;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -17,9 +16,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.igufguf.kingdomcraft.KingdomCraft;
-import com.igufguf.kingdomcraft.api.KingdomCraftApi;
-import com.igufguf.kingdomcraft.api.models.kingdom.KingdomUser;
+import com.gufli.kingdomcraft.api.KingdomCraft;
+import com.gufli.kingdomcraft.api.KingdomCraftProvider;
+import com.gufli.kingdomcraft.api.domain.User;
+
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -29,8 +29,7 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 	
 	private static Main instance;
 	private static UserManager um;
-	KingdomCraft kdc = (KingdomCraft) Bukkit.getPluginManager().getPlugin("KingdomCraft");
-	KingdomCraftApi kapi = kdc.getApi();
+	KingdomCraft kdc = KingdomCraftProvider.get();
 	
 	public KoningenSysteem(Main main) {
 		KoningenSysteem.instance = main;
@@ -95,7 +94,8 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 				p.sendMessage(ChatColor.RED + "De ingevoerde speler is niet gevonden!");
 				return false;
 			}
-			if(kapi.getUserHandler().getUser(p).getRank().equalsIgnoreCase("koning") || p.hasPermission("kingdom.admin")) {
+			User ku = kdc.getOnlineUser(p.getName());
+			if(ku.getRank() == ku.getKingdom().getRank("koning")  || p.hasPermission("kingdom.admin")) {
 				um = new UserManager(instance, p);
 				String kd1 = um.getConfig().getString("status.kingdom");
 				String kd2 = checkOther(target, "status.kingdom");
@@ -121,7 +121,8 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 			return false;
 		}
 		if(cmd.getName().equalsIgnoreCase("kd-invite")) {
-			if(kapi.getUserHandler().getUser(p).getRank().equalsIgnoreCase("koning") || p.hasPermission("kingdom.invite")) {
+			User ku = kdc.getOnlineUser(p.getName());
+			if(ku.getRank() == ku.getKingdom().getRank("koning") || p.hasPermission("kingdom.invite")) {
 				um = new UserManager(instance, p);
 				if(args.length < 1) {
 					p.sendMessage(ChatColor.RED + "Je hebt geen speler opgegeven!");
@@ -138,9 +139,8 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 				}
 				if(checkOtherTime(target) < 3) { p.sendMessage(ChatColor.RED + "Deze speler heeft nog geen 3 uur playtime!" + ChatColor.GRAY + " Hij heeft nu: " + checkOtherTime(target) + " Uren"); return false; }
 				String kd = um.getConfig().getString("status.kingdom");
-				Integer max = kapi.getKingdomHandler().getKingdom(kd).getMaxMembers();
-				List<KingdomUser> cul = kapi.getKingdomHandler().getMembers(kapi.getKingdomHandler().getKingdom(kd));
-				Integer curr = cul.size();
+				Integer max = kdc.getKingdom(kd).getMaxMembers();
+				Integer curr = kdc.getKingdom(kd).getMemberCount();
 				if(curr == max || curr > max) {
 					p.sendMessage(ChatColor.RED + "Je kingdom zit vol, hierdoor kon je invite niet worden verzonden!");
 					return false;
@@ -168,8 +168,8 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 					if(args[0].equalsIgnoreCase("accept")) {
 						if(um.getConfig().getString("status.kingdom").equalsIgnoreCase(args[1])) { p.sendMessage(ChatColor.RED + "Je zit al in dit Kingdom!"); invite.remove(p); return false; }
 						um.editConfig().set("status.kingdom", args[1].toUpperCase());
-						KingdomUser ku = kapi.getUserHandler().getUser(p);
-						ku.setKingdom(args[1]);
+						User ku = kdc.getOnlineUser(p.getName());
+						ku.setKingdom(kdc.getKingdom(args[1]));
 						Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "kd set " + p.getName() + " " + args[1]);
 						um.save();
 						p.sendMessage(ChatColor.GREEN + "Je bent het kingdom gejoined");

@@ -97,9 +97,9 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 			User ku = kdc.getOnlineUser(p.getName());
 			if(ku.getRank() == ku.getKingdom().getRank("koning")  || p.hasPermission("kingdom.admin")) {
 				um = new UserManager(instance, p);
-				String kd1 = um.getConfig().getString("status.kingdom");
-				String kd2 = checkOther(target, "status.kingdom");
-				if(kd1.equals(kd2) || p.hasPermission("kingodm.admin")) {
+				String kd1 = um.getConfig().getString("status.kingdom").toLowerCase();
+				String kd2 = checkOther(target, "status.kingdom").toLowerCase();
+				if(kd1.equalsIgnoreCase(kd2) || p.hasPermission("kingodm.admin")) {
 					Inventory mainmenu = makeInv(p, ChatColor.RED + "Kingdom Administrator", 9);
 					ArrayList<String> list = new ArrayList<String>();
 					ArrayList<String> list2 = new ArrayList<String>();

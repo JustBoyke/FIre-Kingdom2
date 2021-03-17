@@ -204,7 +204,7 @@ public class EventSystem implements Listener{
 					editOther(player, "status.kingdom", "NO-KD");
 					player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " uit het Kingdom gezet!");
 					p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol verwijderd uit je kingdom!");
-					User ku = kdc.getOnlineUser(p.getName());
+					User ku = kdc.getOnlineUser(player.getName());
 					ku.setKingdom(null);
 					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kd kick " + player.getName());
 					p.closeInventory();
@@ -269,7 +269,7 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar generaal gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Generaal!");
-				User ku = kdc.getOnlineUser(p.getName());
+				User ku = kdc.getOnlineUser(player.getName());
 				Rank ra = ku.getKingdom().getRank("Generaal");
 				ku.setRank(ra);
 				kdc.saveAsync(ku);
@@ -287,7 +287,7 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Luitenant gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Luitenant!");
-				User ku = kdc.getOnlineUser(p.getName());
+				User ku = kdc.getOnlineUser(player.getName());
 				Rank ra = ku.getKingdom().getRank("Luitenant");
 				ku.setRank(ra);
 				kdc.saveAsync(ku);
@@ -305,7 +305,7 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar soldaat gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Soldaat!");			
-				User ku = kdc.getOnlineUser(p.getName());
+				User ku = kdc.getOnlineUser(player.getName());
 				Rank ra = ku.getKingdom().getRank("Soldaat");
 				ku.setRank(ra);
 				kdc.saveAsync(ku);
@@ -323,7 +323,7 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Hertog gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Hertog!");
-				User ku = kdc.getOnlineUser(p.getName());
+				User ku = kdc.getOnlineUser(player.getName());
 				Rank ra = ku.getKingdom().getRank("Hertog");
 				ku.setRank(ra);
 				kdc.saveAsync(ku);
@@ -341,7 +341,7 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Raadgever gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Raadgever!");
-				User ku = kdc.getOnlineUser(p.getName());
+				User ku = kdc.getOnlineUser(player.getName());
 				Rank ra = ku.getKingdom().getRank("Raadgever");
 				ku.setRank(ra);
 				kdc.saveAsync(ku);
@@ -359,7 +359,7 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Handelaar gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Handelaar!");
-				User ku = kdc.getOnlineUser(p.getName());
+				User ku = kdc.getOnlineUser(player.getName());
 				Rank ra = ku.getKingdom().getRank("Handelaar");
 				ku.setRank(ra);
 				kdc.saveAsync(ku);
@@ -377,7 +377,7 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Stuurmeester gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Stuurmeester!");
-				User ku = kdc.getOnlineUser(p.getName());
+				User ku = kdc.getOnlineUser(player.getName());
 				Rank ra = ku.getKingdom().getRank("Stuurmeester");
 				ku.setRank(ra);
 				kdc.saveAsync(ku);
@@ -385,7 +385,7 @@ public class EventSystem implements Listener{
 				return;
 			}
 			
-			if(item.getType() == Material.STONE && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.DARK_GREEN + "Dorpeling")) {
+			if(item.getType() == Material.STONE && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GRAY + "Dorpeling")) {
 				List<String> lore = item.getItemMeta().getLore();
 				String pl = ChatColor.stripColor(lore.get(1).toString());
 				Player player = Bukkit.getPlayer(pl);
@@ -395,7 +395,7 @@ public class EventSystem implements Listener{
 				}
 				player.sendMessage(ChatColor.RED + "Je bent door koning " + ChatColor.BLUE + p.getName() + ChatColor.RED + " naar Dorpeling gezet!");
 				p.sendMessage(ChatColor.BLUE + player.getName() + ChatColor.GREEN + " successvol gewijzigd naar Dorpeling!");
-				User ku = kdc.getOnlineUser(p.getName());
+				User ku = kdc.getOnlineUser(player.getName());
 				Rank ra = ku.getKingdom().getRank("Dorpeling");
 				ku.setRank(ra);
 				kdc.saveAsync(ku);

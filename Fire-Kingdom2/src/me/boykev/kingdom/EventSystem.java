@@ -20,6 +20,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffectType;
@@ -109,10 +110,10 @@ public class EventSystem implements Listener{
 	public void onInventoryClick(InventoryClickEvent e) {
 		Player p = (Player) e.getWhoClicked();
 		ItemStack item = e.getCurrentItem();
-		Inventory inv = e.getInventory();
 		cm = new ConfigManager(instance);
 		um = new UserManager(instance, p);
-		if(inv.getName().equals(ChatColor.RED + "Kingdom Selector")) {
+		InventoryView inv = e.getView();
+		if(inv.getTitle().equals(ChatColor.RED + "Kingdom Selector")) {
 			e.setCancelled(true);
 				if(item.getType() == Material.STONE && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.GOLD + "Nagard")) {
 					if(this.theBalancer("Nagard") == false) {
@@ -185,10 +186,10 @@ public class EventSystem implements Listener{
 	public void kingdomKoningClick(InventoryClickEvent e) {
 		Player p = (Player) e.getWhoClicked();
 		ItemStack item = e.getCurrentItem();
-		Inventory inv = e.getInventory();
+		InventoryView inv = e.getView();
 		cm = new ConfigManager(instance);
 		um = new UserManager(instance, p);
-		if(inv.getName().equals(ChatColor.RED + "Kingdom Administrator") || inv.getName().equals(ChatColor.GREEN + "Rangen Menu")) {
+		if(inv.getTitle().equals(ChatColor.RED + "Kingdom Administrator") || inv.getTitle().equals(ChatColor.GREEN + "Rangen Menu")) {
 			if(e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || e.getAction() == InventoryAction.HOTBAR_SWAP || e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
 				e.setCancelled(true);
 				return;
@@ -233,7 +234,7 @@ public class EventSystem implements Listener{
 					list.add(ChatColor.BLUE + target.getName());
 					ItemStack l1 = KoningenSysteem.makeItem(ChatColor.RED + "Generaal", list, Material.DIAMOND_SWORD, 1);
 					ItemStack l2 = KoningenSysteem.makeItem(ChatColor.RED + "Luitenant", list, Material.IRON_SWORD, 1);
-					ItemStack l3 = KoningenSysteem.makeItem(ChatColor.RED + "Soldaat", list, Material.GOLD_SWORD, 1);
+					ItemStack l3 = KoningenSysteem.makeItem(ChatColor.RED + "Soldaat", list, Material.GOLDEN_SWORD, 1);
 					
 					ItemStack h1 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Hertog", list, Material.DIAMOND_BLOCK, 1);
 					ItemStack h2 = KoningenSysteem.makeItem(ChatColor.DARK_GREEN + "Raadgever", list, Material.IRON_BLOCK, 1);
@@ -254,7 +255,7 @@ public class EventSystem implements Listener{
 					
 				}
 		}
-		if(inv.getName().equals(ChatColor.GREEN + "Rangen Menu")) {
+		if(inv.getTitle().equals(ChatColor.GREEN + "Rangen Menu")) {
 			if(e.getAction() == InventoryAction.HOTBAR_MOVE_AND_READD || e.getAction() == InventoryAction.HOTBAR_SWAP || e.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
 				e.setCancelled(true);
 				return;
@@ -295,7 +296,7 @@ public class EventSystem implements Listener{
 				return;
 			}
 			
-			if(item.getType() == Material.GOLD_SWORD && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.RED + "Soldaat")) {
+			if(item.getType() == Material.GOLDEN_SWORD && e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.RED + "Soldaat")) {
 				List<String> lore = item.getItemMeta().getLore();
 				String pl = ChatColor.stripColor(lore.get(1).toString());
 				Player player = Bukkit.getPlayer(pl);
@@ -441,7 +442,7 @@ public class EventSystem implements Listener{
 		
 		
 		if(e.getCause().equals(DamageCause.FALL)) {
-			ItemStack watch = new ItemStack(Material.WATCH);
+			ItemStack watch = new ItemStack(Material.CLOCK);
 			if(p.getInventory().getItemInHand() == watch) {
 				ItemMeta im = p.getInventory().getItemInHand().getItemMeta();
 				if(im.getDisplayName().equalsIgnoreCase(ChatColor.DARK_GRAY + "Theros Dagger")) {

@@ -6,7 +6,6 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.libs.jline.internal.Log;
 import net.md_5.bungee.api.ChatColor;
 
 public class LicenseCheck {
@@ -77,12 +76,10 @@ public class LicenseCheck {
 	            }
 	            else { 
 	            	Bukkit.getServer().getPluginManager().disablePlugin(instance);
-		            Log.info(ChatColor.DARK_PURPLE + "Licentie FAILD" + licfinal);
 		            return false;
 	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            Log.info(ChatColor.DARK_PURPLE + "Licentie FAILD");
 	            return false;
 	        }
 	}

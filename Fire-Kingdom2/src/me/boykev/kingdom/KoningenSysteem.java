@@ -27,8 +27,8 @@ import me.codedred.playtimes.api.TimelessPlayer;
 
 public class KoningenSysteem implements Listener, CommandExecutor {
 	
+	@SuppressWarnings("unused")
 	private static Main instance;
-	private static UserManager um;
 	KingdomCraft kdc = KingdomCraftProvider.get();
 	
 	public KoningenSysteem(Main main) {
@@ -56,15 +56,13 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 		Inventory menu = Bukkit.createInventory(player, size, name);
 		return menu;
 	}
-	public static String checkOther(Player p, String config) {
-		um = new UserManager(instance, p);
-		return um.getConfig().getString(config);
-	}
 	
 	public static int checkOtherTime(Player p) {
-		TimelessPlayer player = new TimelessPlayer(p);
-		int kaas = player.getHours();
-		return kaas;
+	    TimelessPlayer player = new TimelessPlayer(p);
+	    long playtimeInSeconds = player.getRawPlayTimeInSeconds();
+	    double playtimeInHours = playtimeInSeconds / 3600.0; // Use 3600.0 for floating-point division
+	    int roundedPlaytimeInHours = (int) Math.round(playtimeInHours);
+	    return roundedPlaytimeInHours;
 	}
 	
 	public static Player checkPlayer(String name) {
@@ -84,73 +82,84 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		Player p = (Player) sender;
-		if(cmd.getName().equalsIgnoreCase("kd-admin")) {
+		if(cmd.getName().equalsIgnoreCase("civadmin")) {
 			if(args.length < 1) {
-				p.sendMessage(ChatColor.RED + "Je gebuikt het commando niet juist, Gebruik /kd-admin [player]");
+				p.sendMessage(ChatColor.RED + "Please use /cidadmin [playername]");
 				return false;
 			}
 			Player target = checkPlayer(args[0]);
 			if (target == null) {
-				p.sendMessage(ChatColor.RED + "De ingevoerde speler is niet gevonden!");
+				p.sendMessage(ChatColor.RED + "The player is not found!");
 				return false;
 			}
 			User ku = kdc.getOnlineUser(p.getName());
-			if(ku.getRank() == ku.getKingdom().getRank("koning")  || p.hasPermission("kingdom.admin")) {
-				um = new UserManager(instance, p);
-				String kd1 = um.getConfig().getString("status.kingdom").toLowerCase();
-				String kd2 = checkOther(target, "status.kingdom").toLowerCase();
-				if(kd1.equalsIgnoreCase(kd2) || p.hasPermission("kingodm.admin")) {
-					Inventory mainmenu = makeInv(p, ChatColor.RED + "Kingdom Administrator", 9);
+			if(ku.getKingdom() == null) {
+				p.sendMessage(ChatColor.RED + "You don`t have a Civilization.");
+				return false;
+			}
+			if(ku.getRank().getName().equalsIgnoreCase("king") || ku.getRank().getName().equalsIgnoreCase("queen") ||  p.hasPermission("kingdom.admin")) {
+				String kd1 = ku.getKingdom().getName();
+				if(kd1 == null) {
+					p.sendMessage(ChatColor.RED + "You don`t have a Civilization or you are not the king or queen.");
+					return false;
+				}
+				User kdo = kdc.getOnlineUser(target.getName());
+				if(kdo.getKingdom() == null) {
+					p.sendMessage(ChatColor.RED + "This player can not be managed. He/She is not part of a Civilization");
+					return false;
+				}
+				String kd2 = kdo.getKingdom().getName();
+				if(kd1.equalsIgnoreCase(kd2) || p.hasPermission("kingdom.admin")) {
+					Inventory mainmenu = makeInv(p, ChatColor.RED + "Civilization Administrator", 9);
 					ArrayList<String> list = new ArrayList<String>();
 					ArrayList<String> list2 = new ArrayList<String>();
-					list.add(ChatColor.RED + "Wijzig de rang van: ");
+					list.add(ChatColor.RED + "Change the role of: ");
 					list.add(ChatColor.BLUE + target.getName());
-					list2.add(ChatColor.RED + "Kick speler: ");
+					list2.add(ChatColor.RED + "Kick player: ");
 					list2.add(ChatColor.BLUE + target.getName());
-					ItemStack i1 = makeItem(ChatColor.GREEN + "Speler Rank", list, Material.ARROW, 1);
-					ItemStack i2 = makeItem(ChatColor.GREEN + "Kick Speler", list2, Material.BARRIER, 1);
+					ItemStack i1 = makeItem(ChatColor.GREEN + "Player Role", list, Material.ARROW, 1);
+					ItemStack i2 = makeItem(ChatColor.GREEN + "Kick Player", list2, Material.BARRIER, 1);
 					mainmenu.setItem(0, i1);
 					mainmenu.setItem(2, i2);
 					p.openInventory(mainmenu);
 					return false;
 				}
-				p.sendMessage(ChatColor.RED + "Je kan alleen spelers aanpassen die in jouw kingdom zitten!");
+				p.sendMessage(ChatColor.RED + "You can only change players in your own Civilization");
 				return false;
 			}
-			p.sendMessage(ChatColor.RED + "Sorry, dit commando is alleen beschikbaar voor de koning!");
+			p.sendMessage(ChatColor.RED + "Sorry, this command is reserverd for the King and Queen!");
 			return false;
 		}
-		if(cmd.getName().equalsIgnoreCase("kd-invite")) {
+		if(cmd.getName().equalsIgnoreCase("civinvite")) {
 			User ku = kdc.getOnlineUser(p.getName());
-			if(ku.getRank() == ku.getKingdom().getRank("koning") || p.hasPermission("kingdom.invite")) {
-				um = new UserManager(instance, p);
+			if(ku.getRank().getName().equalsIgnoreCase("king") || ku.getRank().getName().equalsIgnoreCase("queen") || p.hasPermission("kingdom.invite")) {
 				if(args.length < 1) {
-					p.sendMessage(ChatColor.RED + "Je hebt geen speler opgegeven!");
+					p.sendMessage(ChatColor.RED + "You did not specify a player");
 					return false;
 				}
-				if(um.getConfig().getString("status.kingdom").equalsIgnoreCase("NO-KD")) {
-					p.sendMessage(ChatColor.RED + "Je zit niet in een Kingdom");
+				if(ku.getKingdom() == null) {
+					p.sendMessage(ChatColor.RED + "You don`t have a Civilization");
 					return false;
 				}
 				Player target = Bukkit.getPlayer(args[0]);
 				if (target == null) {
-					p.sendMessage(ChatColor.RED + "De speler die je hebt opegeven bestaat niet of is niet online!");
+					p.sendMessage(ChatColor.RED + "The player you enterd is not online or does not exist!");
 					return false;
 				}
-				if(checkOtherTime(target) < 3) { p.sendMessage(ChatColor.RED + "Deze speler heeft nog geen 3 uur playtime!" + ChatColor.GRAY + " Hij heeft nu: " + checkOtherTime(target) + " Uren"); return false; }
-				String kd = um.getConfig().getString("status.kingdom");
+				String kd = ku.getKingdom().getName();
 				Integer max = kdc.getKingdom(kd).getMaxMembers();
 				Integer curr = kdc.getKingdom(kd).getMemberCount();
 				if(curr == max || curr > max) {
-					p.sendMessage(ChatColor.RED + "Je kingdom zit vol, hierdoor kon je invite niet worden verzonden!");
+					p.sendMessage(ChatColor.RED + "Your Civilization is full, the invite has been canceled!");
 					return false;
 				}
-				if(checkOther(target, "status.kingdom").equalsIgnoreCase(kd)) { p.sendMessage(ChatColor.RED + "Deze speler zit al in je Kingdom"); return false; }
-				p.sendMessage(ChatColor.GREEN + "Je hebt een invite voor kingdom: " + ChatColor.BLUE + kd);
-				TextComponent msg = new TextComponent(ChatColor.GREEN + "Om te accepteren " + ChatColor.BLUE + "(Klik Hier)");
+				User kdo = kdc.getOnlineUser(target.getName());
+				if(kdo.getKingdom() == ku.getKingdom()) { p.sendMessage(ChatColor.RED + "This player is already in your Civilization"); return false; }
+				p.sendMessage(ChatColor.GREEN + "You have an invite for Civilization: " + ChatColor.BLUE + kd);
+				TextComponent msg = new TextComponent(ChatColor.GREEN + "To accept " + ChatColor.BLUE + "(Click this)");
 				msg.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kd-invitemanager accept " + kd.toLowerCase()));
 				
-				TextComponent msg2 = new TextComponent(ChatColor.RED + "Om te wijgeren " + ChatColor.BLUE + "(Klik Hier)");
+				TextComponent msg2 = new TextComponent(ChatColor.RED + "To deny " + ChatColor.BLUE + "(Click this)");
 				msg2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/kd-invitemanager deny " + p.getName() + " " + kd));
 				target.spigot().sendMessage(msg);
 				target.spigot().sendMessage(msg2);
@@ -158,35 +167,35 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 				invite.put(target, 1);
 				return false;
 			}
-			p.sendMessage(ChatColor.RED + "Je hebt helaas geen permissies om spelers te inviten voor je kingdom!");
+			p.sendMessage(ChatColor.RED + "You don`t have the permissions for that!");
 			return false;
 		}
 		if(cmd.getName().equalsIgnoreCase("kd-invitemanager")) {
-			um = new UserManager(instance, p);
 			for(Entry<Player, Integer> e : invite.entrySet()) {
 				if(e.getKey().equals(p)) {
 					if(args[0].equalsIgnoreCase("accept")) {
-						if(um.getConfig().getString("status.kingdom").equalsIgnoreCase(args[1])) { p.sendMessage(ChatColor.RED + "Je zit al in dit Kingdom!"); invite.remove(p); return false; }
-						um.editConfig().set("status.kingdom", args[1].toUpperCase());
 						User ku = kdc.getOnlineUser(p.getName());
+						if(ku.getKingdom() != null) {
+							if(ku.getKingdom().getName().equalsIgnoreCase(args[1])) { p.sendMessage(ChatColor.RED + "You are already in this Civilization!"); invite.remove(p); return false; }
+						}
 						ku.setKingdom(kdc.getKingdom(args[1]));
-						Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "kd set " + p.getName() + " " + args[1]);
-						um.save();
-						p.sendMessage(ChatColor.GREEN + "Je bent het kingdom gejoined");
+						Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "civ set " + p.getName() + " " + args[1]);
+						p.sendMessage(ChatColor.GREEN + "You joined the Civilization");
 						invite.remove(p);
 						return false;
 					}
 					if(args[0].equalsIgnoreCase("deny")) {
-						if(um.getConfig().getString("status.kingdom").equalsIgnoreCase(args[2])) { p.sendMessage(ChatColor.RED + "Je zit al in dit Kingdom!"); invite.remove(p); return false; }
+						User ku = kdc.getOnlineUser(p.getName());
+						if(ku.getKingdom().getName().equalsIgnoreCase(args[2])) { p.sendMessage(ChatColor.RED + "You are already in this Civilization"); invite.remove(p); return false; }
 						Player tg = Bukkit.getPlayer(args[1]);
-						tg.sendMessage(ChatColor.RED + p.getName() + " heeft je invite gewijgerd!");
-						p.sendMessage(ChatColor.RED + "Je hebt de invite gewijgerd!");
+						tg.sendMessage(ChatColor.RED + p.getName() + " has declined your invite!");
+						p.sendMessage(ChatColor.RED + "You have declined the invite!");
 						invite.remove(p);
 						return false;
 					}
 				}
 			}
-			p.sendMessage(ChatColor.RED + "Je kan dit alleen uitvoeren als je een invite hebt!");
+			p.sendMessage(ChatColor.RED + "You can run this command only if you have an invite for a Civilization");
 			return false;
 		}
 		return false;

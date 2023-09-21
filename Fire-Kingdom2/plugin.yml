@@ -1,32 +1,24 @@
-name: Fire-Kingdom2
-version: 3.0
+name: Civilization
+version: "2.1"
+api-version: 1.16
+api: "1.16"
 main: me.boykev.kingdom.Main
 author: boykev
 depend: [KingdomCraft,KingdomCraftPremium]
 commands:
-  kd-selector:
-    description: Kingdom Selector Commando.
-  fire-kingdom:
+  civilization:
     description: Main base command.
-  kdsetspawn:
+  civspawn:
     description: Main base command.
-  kdspawn:
+  civcheck:
     description: Main base command.
-  setkingdom:
+  civadmin:
     description: Main base command.
-  check-kingdom:
-    description: Main base command.
-  kd-admin:
-    description: Main base command.
-  kd-invite:
+  civinvite:
     description: Main base command.
   kd-invitemanager:
     description: Main base command.
-  godhp:
-    description: Main base command.
-  steal:
-    description: Main base command.
   rulemanager-accept:
     description: Main base command.
-  kdsetcolor:
+  civ-create:
     description: Main base command.

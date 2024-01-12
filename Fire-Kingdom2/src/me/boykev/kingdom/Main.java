@@ -25,9 +25,12 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
@@ -36,13 +39,14 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.slf4j.event.Level;
 
 import net.md_5.bungee.api.ChatColor;
 import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 
 
-@SuppressWarnings("unused")
+@SuppressWarnings({ "unused", "deprecation" })
 public class Main extends JavaPlugin implements Listener {
 	private ConfigManager cm;
 	public static String PREFIX; 
@@ -56,6 +60,7 @@ public class Main extends JavaPlugin implements Listener {
 	public HashMap<Player, Boolean> nokd = new HashMap<Player, Boolean>();
 	public HashMap<Player, Boolean> nover = new HashMap<Player, Boolean>();
 	private LicenseCheck lc;
+	private PlaceholderAPI pl;
 
 	
 	@Override
@@ -93,6 +98,10 @@ public class Main extends JavaPlugin implements Listener {
     		if(service != null)
     			economy = service.getProvider();
     	}
+    	if(pm.getPlugin("PlaceholderAPI") != null) {
+			new PlaceholderAPI(this).register();
+		}
+    	pl = new PlaceholderAPI(this);
     	
     	
     	
@@ -101,14 +110,49 @@ public class Main extends JavaPlugin implements Listener {
 		pm.registerEvents(this, this);
 		pm.registerEvents(new EventSystem(this), this);
 		pm.registerEvents(new KoningenSysteem(this), this);
-		pm.registerEvents(new CheckRules(this), this);
     	getCommand("civspawn").setExecutor(new CommandManager(this));
+    	getCommand("setpower").setExecutor(new CommandManager(this));
+    	getCommand("repair").setExecutor(new CommandManager(this));
+    	getCommand("repaira").setExecutor(new CommandManager(this));
+    	getCommand("repairb").setExecutor(new CommandManager(this));
+    	getCommand("repairc").setExecutor(new CommandManager(this));
+    	getCommand("discord").setExecutor(new CommandManager(this));
+    	getCommand("civsetspawn").setExecutor(new CommandManager(this));
+    	getCommand("civhome").setExecutor(new CommandManager(this));
     	getCommand("civ-create").setExecutor(new CommandManager(this));
+    	getCommand("cpitem").setExecutor(new CommandManager(this));
     	getCommand("civcheck").setExecutor(new CommandManager(this));
     	getCommand("civadmin").setExecutor(new KoningenSysteem(this));
     	getCommand("civinvite").setExecutor(new KoningenSysteem(this));
+    	getCommand("civsethome").setExecutor(new KoningenSysteem(this));
     	getCommand("kd-invitemanager").setExecutor(new KoningenSysteem(this));
+    	getCommand("removebox").setExecutor(new KoningenSysteem(this));
+    	getCommand("online").setExecutor(new KoningenSysteem(this));
+    	getCommand("borders").setExecutor(new KoningenSysteem(this));
     	getCommand("rulemanager-accept").setExecutor(new CheckRules(this));
+    	
+    	new BukkitRunnable() {
+
+			@Override
+			public void run() {
+				Plugin kdplp = Bukkit.getPluginManager().getPlugin("KingdomCraft Premium");
+		    	Plugin kdpl = Bukkit.getPluginManager().getPlugin("KingdomCraft");
+		    	BlockBreakEvent.getHandlerList().unregister(kdpl);
+		    	BlockBreakEvent.getHandlerList().unregister(kdplp);
+		    	
+		    	BlockPlaceEvent.getHandlerList().unregister(kdpl);
+		    	BlockPlaceEvent.getHandlerList().unregister(kdplp);
+		    	
+		    	PlayerPickupItemEvent.getHandlerList().unregister(kdpl);
+		    	PlayerPickupItemEvent.getHandlerList().unregister(kdplp);
+		    	
+		    	BlockBreakEvent.getHandlerList().unregister(kdpl);
+		    	BlockBreakEvent.getHandlerList().unregister(kdplp);
+		    	System.out.println(ChatColor.RED + "Unregisterd KDP Events!");
+			}
+    		
+    	}.runTaskLater(this, 60L);
+    	
     	
     	new BukkitRunnable() {
     		public void run() {
@@ -145,6 +189,9 @@ public class Main extends JavaPlugin implements Listener {
 	
 	@Override
 	public void onDisable() {
+		if(Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null){
+			new PlaceholderAPI(this).unregister();
+		}
 		Bukkit.getConsoleSender().sendMessage(ChatColor.RED + "-------[Civilization]------");
     	Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "Plugin disabled");
     	Bukkit.getConsoleSender().sendMessage(ChatColor.DARK_RED + "Made with <3 by Fire-Development (boykev)");

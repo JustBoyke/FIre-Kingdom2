@@ -4,7 +4,7 @@ api-version: 1.16
 api: "1.16"
 main: me.boykev.kingdom.Main
 author: boykev
-depend: [KingdomCraft,KingdomCraftPremium]
+depend: [KingdomCraft]
 commands:
   civilization:
     description: Main base command.
@@ -21,4 +21,30 @@ commands:
   rulemanager-accept:
     description: Main base command.
   civ-create:
+    description: Main base command.
+  civsetspawn:
+    description: Main base command.
+  discord:
+    description: Main base command.
+  civsethome:
+    description: Main base command.
+  civhome:
+    description: Main base command.
+  repair:
+    description: Main base command.
+  repaira:
+    description: Main base command.
+  repairb:
+    description: Main base command.
+  repairc:
+    description: Main base command.
+  cpitem:
+    description: Main base command.
+  setpower:
+    description: Main base command.
+  removebox:
+    description: Main base command.
+  online:
+    description: Main base command.
+  borders:
     description: Main base command.

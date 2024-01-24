@@ -3,10 +3,15 @@ package me.boykev.kingdom;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -29,6 +34,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -38,6 +44,7 @@ import com.gufli.kingdomcraft.api.KingdomCraftProvider;
 import com.gufli.kingdomcraft.api.domain.Rank;
 import com.gufli.kingdomcraft.api.domain.User;
 
+import de.tr7zw.nbtapi.NBTItem;
 import net.md_5.bungee.api.ChatColor;
 import org.json.simple.JSONObject;
 
@@ -48,6 +55,94 @@ public class EventSystem implements Listener{
 	}
 	
 	KingdomCraft kdc = KingdomCraftProvider.get();
+	
+	
+	MySQLDatabase mySQLDatabase = new MySQLDatabase("remote.dixiehosting.nl", "nedercraft", "nedercraft", "aRhXkWAt6F7bVbT44pUp", 3308);
+	
+	public List<UUID> getAccessibleBankAccounts(UUID playerUUID) {
+	    List<UUID> accessibleAccounts = new ArrayList<>();
+	    mySQLDatabase.connect();
+	    Connection connection = mySQLDatabase.getConnection();
+	    
+	    if (connection != null) {
+	        String query = "SELECT bank_account_uuid FROM bankdata WHERE player_uuid=?";
+	        
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, playerUUID.toString());
+	            
+	            ResultSet resultSet = preparedStatement.executeQuery();
+	            
+	            while (resultSet.next()) {
+	                String bankAccountUUIDString = resultSet.getString("bank_account_uuid");
+	                UUID bankAccountUUID = UUID.fromString(bankAccountUUIDString);
+	                accessibleAccounts.add(bankAccountUUID);
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    mySQLDatabase.disconnect();
+	    return accessibleAccounts;
+	    
+	}
+	
+	public String getAccountName(UUID accountID) {
+	    mySQLDatabase.connect();
+	    Connection connection = mySQLDatabase.getConnection();
+	    String name = null;
+
+	    if (connection != null) {
+	        String query = "SELECT account_name FROM bank_names WHERE bank_account_uuid=?";
+
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, accountID.toString());
+
+	            ResultSet resultSet = preparedStatement.executeQuery();
+	            if (resultSet.next()) {
+	                name = resultSet.getString("account_name");
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    mySQLDatabase.disconnect();
+	    return name;
+	}
+	
+	private ItemStack createBankAccountItem(UUID bankAccountUUID) {
+	    // Create an ItemStack representing the bank account
+	    ItemStack itemStack = new ItemStack(Material.CHEST); // Use an appropriate material
+	    String name = this.getAccountName(bankAccountUUID);
+	    
+	    ItemMeta itemMeta = itemStack.getItemMeta();
+	    itemMeta.setDisplayName(ChatColor.GOLD + "Account: " + ChatColor.GRAY + name); // Set an appropriate display name
+	    
+	    // You can also add lore or other information to the item meta if needed
+	    
+	    itemStack.setItemMeta(itemMeta);
+	    NBTItem nbti = new NBTItem(itemStack);
+	    
+	    nbti.setString("uuid", bankAccountUUID.toString());	    
+	    return nbti.getItem();
+	}
+	
+	public void openBankingInventory(Player p) {
+	    Inventory bankInventory = Bukkit.createInventory(null, 9, ChatColor.GRAY + "Bank account ");
+	    
+	    // Retrieve the list of bank accounts the player has access to from the database
+	    List<UUID> bankAccountUUIDs = getAccessibleBankAccounts(p.getUniqueId());
+	    
+	    // Populate the inventory with bank accounts
+	    for (UUID bankAccountUUID : bankAccountUUIDs) {
+	        ItemStack bankAccountItem = createBankAccountItem(bankAccountUUID);
+	        bankInventory.addItem(bankAccountItem);
+	    }
+	    
+	    p.openInventory(bankInventory);
+	}
+
 	
 	private static Main instance;
 	@SuppressWarnings("unused")
@@ -89,28 +184,12 @@ public class EventSystem implements Listener{
 			e.getPlayer().sendMessage(ChatColor.GREEN + "Statuschanger Gemaakt");
 		}
 		if(e.getLine(0).equalsIgnoreCase("[banking]")) {
-			if(e.getLine(1).isBlank()) {
-				e.setLine(0, ChatColor.RED + "[banking]");
-				e.getPlayer().sendMessage(ChatColor.RED + "Je hebt geen ... opgegeven!");
-				return;
-			}
-			if(e.getLine(2).isBlank()) {
-				e.setLine(0, ChatColor.RED + "[banking]");
-				e.getPlayer().sendMessage(ChatColor.RED + "Je hebt geen ... opgegeven!");
-				return;
-			}
-			if(e.getLine(3).isBlank()) {
-				e.setLine(0, ChatColor.RED + "[banking]");
-				e.getPlayer().sendMessage(ChatColor.RED + "Je hebt geen ... opgegeven!");
-				return;
-			}
-			e.setLine(0, ChatColor.BLUE + "[banking]");			
+			e.setLine(0, ChatColor.BLUE + "[banking]");
+			e.setLine(1, ChatColor.ITALIC + "Klik links om de");
+			e.setLine(2, ChatColor.ITALIC + "bank te openen");
 		}
 	}
-	
-	public void openBankingInventory(Player p) {
-		//Hier komt het player inventory gedeelte.
-	}
+
 	
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -148,6 +227,7 @@ public class EventSystem implements Listener{
 				if(sign.getLine(0).equalsIgnoreCase(ChatColor.BLUE + "[banking]")) {
 					e.setCancelled(true);
 					e.getPlayer().sendMessage(ChatColor.GREEN + "Je klikte op een banking sign!");
+					this.openBankingInventory(e.getPlayer());
 					return;
 				}
 			}
@@ -209,6 +289,16 @@ public class EventSystem implements Listener{
 		}
 		if(inv.getTitle().startsWith(ChatColor.GRAY + "Bank account ")) {
 			e.setCancelled(true);
+			if(item == null) {
+				return;
+			}
+			if(item.getType() == Material.CHEST && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GOLD + "Account: ")) {
+				NBTItem nbti = new NBTItem(e.getCurrentItem());
+				String uuid = nbti.getString("uuid");
+				p.sendMessage(ChatColor.GREEN + "Je klikte op account met ID: " + ChatColor.GOLD + uuid);
+				p.closeInventory();
+				return;
+			}
 			return;
 		}
 		if(inv.getTitle().equals(ChatColor.RED + "Civilization Administrator")) {

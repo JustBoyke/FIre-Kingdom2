@@ -1,6 +1,10 @@
 package me.boykev.kingdom;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -43,6 +47,56 @@ public class CommandManager implements CommandExecutor {
 	        return false;
 	    }
 	}
+	
+	MySQLDatabase mySQLDatabase = new MySQLDatabase("remote.dixiehosting.nl", "nedercraft", "nedercraft", "aRhXkWAt6F7bVbT44pUp", 3308);
+	private boolean insertBankAccount(UUID playerName, UUID accountUUID) {
+	    mySQLDatabase.connect();
+	    Connection connection = mySQLDatabase.getConnection();
+	    
+	    if (connection != null) {
+	        String query = "INSERT INTO bankdata (player_uuid, bank_account_uuid) VALUES (?, ?)";
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, playerName.toString());
+	            preparedStatement.setString(2, accountUUID.toString());
+	            
+	            int rowsInserted = preparedStatement.executeUpdate();
+	            
+	            return rowsInserted > 0;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        } finally {
+	            mySQLDatabase.disconnect();
+	        }
+	    }
+	    
+	    return false;
+	}
+	
+	private boolean insertBankAccountName(UUID accountUUID, String accountName) {
+	    mySQLDatabase.connect();
+	    Connection connection = mySQLDatabase.getConnection();
+	    
+	    if (connection != null) {
+	        String query = "INSERT INTO bank_names (bank_account_uuid, account_name) VALUES (?, ?)";
+	        
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, accountUUID.toString());
+	            preparedStatement.setString(2, accountName);
+	            
+	            int rowsInserted = preparedStatement.executeUpdate();
+	            
+	            return rowsInserted > 0;
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        } finally {
+	            mySQLDatabase.disconnect();
+	        }
+	    }
+	    
+	    return false;
+	}
+	
+	
 		
 	
 
@@ -418,6 +472,44 @@ public class CommandManager implements CommandExecutor {
 			p.sendMessage(ChatColor.RED + "This command is reserved for the king and queen only!");
 			return false;
 			
+		}
+		if (cmd.getName().equalsIgnoreCase("createaccount")) {
+		    if (p.getName().equalsIgnoreCase("boykev")) { // Replace "boykev" with the desired permission or condition
+		        if (args.length < 2) {
+		            p.sendMessage(ChatColor.RED + "Usage: /createaccount <player> <account_name>");
+		            return true;
+		        }
+
+		        // Parse the arguments
+		        String playerName = args[0];
+		        Player tg = Bukkit.getPlayer(playerName);
+		        if(tg == null) {
+		        	p.sendMessage(ChatColor.RED + "Deze speler bestaat niet!");
+		        	return false;
+		        }
+		        String accountName = args[1];
+		        UUID useraccount = tg.getUniqueId();
+		        
+		        // Generate a random UUID for the bank account
+		        UUID accountUUID = UUID.randomUUID();
+
+		        // Insert the new bank account into the database
+		        boolean success = insertBankAccount(useraccount, accountUUID);
+		        boolean success2 = insertBankAccountName(accountUUID, accountName);
+		        
+		        if (success) {
+		            p.sendMessage(ChatColor.GREEN + "Bank account created successfully!");
+		        } else {
+		            p.sendMessage(ChatColor.RED + "Failed to create the bank account.");
+		        }
+		        if (success2) {
+		            p.sendMessage(ChatColor.GREEN + "Bank account name set successfully!");
+		        } else {
+		            p.sendMessage(ChatColor.RED + "Failed to set account name.");
+		        }
+		        
+		        return true;
+		    }
 		}
 		
 		return false;

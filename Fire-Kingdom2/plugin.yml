@@ -54,3 +54,5 @@ commands:
     description: Main base command.
   goatclear:
     description: Main base command.
+  createaccount:
+    description: Main base command.

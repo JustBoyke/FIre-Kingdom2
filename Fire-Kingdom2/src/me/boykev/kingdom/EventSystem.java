@@ -3,25 +3,33 @@ package me.boykev.kingdom;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -29,6 +37,7 @@ import com.gufli.kingdomcraft.api.KingdomCraft;
 import com.gufli.kingdomcraft.api.KingdomCraftProvider;
 import com.gufli.kingdomcraft.api.domain.Rank;
 import com.gufli.kingdomcraft.api.domain.User;
+
 import net.md_5.bungee.api.ChatColor;
 import org.json.simple.JSONObject;
 
@@ -41,6 +50,7 @@ public class EventSystem implements Listener{
 	KingdomCraft kdc = KingdomCraftProvider.get();
 	
 	private static Main instance;
+	@SuppressWarnings("unused")
 	private ConfigManager cm;
 	
 	private boolean isVanished(Player player) {
@@ -50,6 +60,139 @@ public class EventSystem implements Listener{
         return false;
 }
 	
+	@SuppressWarnings("unused")
+	private ItemStack getWeapon(Player attacker) {
+        ItemStack weapon = attacker.getInventory().getItemInMainHand(); // Assuming the attacker used their main hand.
+        if (weapon != null && weapon.getType() != Material.AIR) {
+            return weapon;
+        }
+        return null;
+    }
+	
+	
+	@EventHandler
+	public void placeStatusSign(SignChangeEvent e) {
+		if(e.getLine(0).equalsIgnoreCase("[statussign]")) {
+			if(e.getLine(1).isBlank()) {
+				e.getPlayer().sendMessage(ChatColor.RED + "Geen signlink opgegeven");
+				return;
+			}
+			if(e.getLine(2).isBlank()) {
+				e.getPlayer().sendMessage(ChatColor.RED + "Geen status opgegeven");
+				return;
+			}
+			String line1 = e.getLine(1);
+			String line2 = e.getLine(2);
+			e.setLine(0, ChatColor.BLUE + "[statussign]");
+			e.setLine(1, line2);
+			e.setLine(2, ChatColor.MAGIC + line1);
+			e.getPlayer().sendMessage(ChatColor.GREEN + "Statuschanger Gemaakt");
+		}
+		if(e.getLine(0).equalsIgnoreCase("[banking]")) {
+			if(e.getLine(1).isBlank()) {
+				e.setLine(0, ChatColor.RED + "[banking]");
+				e.getPlayer().sendMessage(ChatColor.RED + "Je hebt geen ... opgegeven!");
+				return;
+			}
+			if(e.getLine(2).isBlank()) {
+				e.setLine(0, ChatColor.RED + "[banking]");
+				e.getPlayer().sendMessage(ChatColor.RED + "Je hebt geen ... opgegeven!");
+				return;
+			}
+			if(e.getLine(3).isBlank()) {
+				e.setLine(0, ChatColor.RED + "[banking]");
+				e.getPlayer().sendMessage(ChatColor.RED + "Je hebt geen ... opgegeven!");
+				return;
+			}
+			e.setLine(0, ChatColor.BLUE + "[banking]");			
+		}
+	}
+	
+	public void openBankingInventory(Player p) {
+		//Hier komt het player inventory gedeelte.
+	}
+	
+	@SuppressWarnings("deprecation")
+	@EventHandler
+	public void clickOnSign(PlayerInteractEvent e) {
+		Block blok = e.getClickedBlock();
+		if(e.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+			if(instance.signs.contains(blok.getType())) {
+				Sign sign = (Sign) blok.getState();
+				if(sign.getLine(0).equalsIgnoreCase(ChatColor.BLUE + "[statussign]")) {
+					e.setCancelled(true);
+					String signlink = ChatColor.stripColor(sign.getLine(2));
+					String state = ChatColor.stripColor(sign.getLine(1));
+					if(signlink.isEmpty()) {
+						e.getPlayer().sendMessage(ChatColor.RED + "Oeps er ging iets fout met deze sign!");
+						return;
+					}
+					if(state.isEmpty()) {
+						e.getPlayer().sendMessage(ChatColor.RED + "Oeps er ging iets fout met deze sign!");
+						return;
+					}
+					if(state.equalsIgnoreCase("gesloten")) {
+						state = "&cGesloten";
+					}else if(state.equalsIgnoreCase("geopend")) {
+						state = "&aGeopend";
+					}
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "var edit " + signlink + " set " + state);
+					e.getPlayer().sendMessage(ChatColor.GREEN + "Status gewijzigd!");
+					return;
+				}
+				if(sign.getLine(0).equalsIgnoreCase(ChatColor.RED + "[banking]")) {
+					e.setCancelled(true);
+					e.getPlayer().sendMessage(ChatColor.RED + "Deze bank sign is invalide en kan niet worden gebruikt!");
+					return;
+				}
+				if(sign.getLine(0).equalsIgnoreCase(ChatColor.BLUE + "[banking]")) {
+					e.setCancelled(true);
+					e.getPlayer().sendMessage(ChatColor.GREEN + "Je klikte op een banking sign!");
+					return;
+				}
+			}
+		}
+	}
+	
+	
+	@SuppressWarnings("deprecation")
+	@EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player victim = event.getEntity();
+        Player attacker = victim.getKiller();
+
+        if (attacker == null) {
+            // No player killed the victim
+            return;
+        }
+
+        Date now = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+        ItemStack weaponUsed = attacker.getInventory().getItemInMainHand();
+
+        ItemStack is = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta skull = (SkullMeta) is.getItemMeta();
+        skull.setOwningPlayer(Bukkit.getOfflinePlayer(victim.getName()));
+        List<String> lore = new ArrayList<>();
+        lore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "Killed by: " + ChatColor.BLUE + attacker.getName());
+        lore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "Died on: " + ChatColor.BLUE + format.format(now));
+        if(weaponUsed.getItemMeta().getDisplayName() == null) {
+        	lore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "Killed with:" + ChatColor.BLUE + weaponUsed.getType().toString());
+        }else if(weaponUsed.hasItemMeta() == false) {
+        	lore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "Killed with:" + ChatColor.BLUE + weaponUsed.getType().toString());
+        }else if(weaponUsed.getItemMeta().getDisplayName() == "") {
+        	lore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "Killed with:" + ChatColor.BLUE + weaponUsed.getType().toString());
+        }else {
+        	lore.add(ChatColor.YELLOW + "" + ChatColor.BOLD + "Killed with:" + ChatColor.BLUE + weaponUsed.getItemMeta().getDisplayName());
+        }
+
+        skull.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + victim.getName() + ChatColor.GRAY + " Head");
+        skull.setLore(lore);
+        is.setItemMeta(skull);
+
+        attacker.getInventory().addItem(is);
+        attacker.sendMessage(ChatColor.GREEN + "Je hebt " + ChatColor.GOLD + victim.getName() + ChatColor.GREEN + " vermoord en daardoor zijn skull gekregen als prijs!");
+    }
 	
 	@EventHandler
 	public void kingdomKoningClick(InventoryClickEvent e) {
@@ -61,6 +204,10 @@ public class EventSystem implements Listener{
 			return;
 		}
 		if(inv.getTitle().equalsIgnoreCase(ChatColor.RED + "Civilization Border State")) {
+			e.setCancelled(true);
+			return;
+		}
+		if(inv.getTitle().startsWith(ChatColor.GRAY + "Bank account ")) {
 			e.setCancelled(true);
 			return;
 		}
@@ -164,47 +311,11 @@ public class EventSystem implements Listener{
 				p.setMaxHealth(45.0);
 			}
 		}
-		if(p.getName().equalsIgnoreCase("coenispro")) {
-			for(ItemStack i : p.getInventory().getArmorContents()) {
-				if(i == null) { return; }
-				short dura = 0;
-				i.setDurability(dura);
-			}
-			if(p.getMaxHealth() < 45.0) {
-				p.setMaxHealth(45.0);
-			}
-		}
 		
 	}
 	
 	@EventHandler
 	public void onMailboxPlace(BlockPlaceEvent e) {
-		if(e.getBlock().getType() == Material.valueOf("SNAILMAIL_SNAIL_BOX")) {
-			User ku = kdc.getOnlineUser(e.getPlayer().getUniqueId());
-			if(ku.getKingdom() == null) {
-				e.getPlayer().sendMessage(ChatColor.RED + "You can`t place this because you are not in a civilization!");
-				e.setCancelled(true);
-				return;
-			}
-			if(ku.getRank().getName().equalsIgnoreCase("king")) {
-				cm = new ConfigManager(instance);
-				Boolean status = cm.getConfig().getBoolean("snailmail." + e.getPlayer().getUniqueId());
-				if(status == false) {
-					e.getPlayer().sendMessage(ChatColor.GREEN + "You have now placed the mailbox for your civilization. This is the only time you can place a snailmail box.");
-					cm.editConfig().set("snailmail." + e.getPlayer().getUniqueId(), true);
-					cm.save();
-					return;
-				}else {
-					e.setCancelled(true);
-					e.getPlayer().sendMessage(ChatColor.RED + "Sorry, you already placed a snailmail box. This can only be done once!");
-					return;
-				}
-			}else {
-				e.getPlayer().sendMessage(ChatColor.RED + "Sorry, only the king can place a snailmail box for your civilization!");
-				e.setCancelled(true);
-				return;
-			}
-		}
 		if(!e.getPlayer().hasPermission("civ.creative")) {
 			if(e.getPlayer().getGameMode() != GameMode.CREATIVE) {
 				return;
@@ -221,13 +332,6 @@ public class EventSystem implements Listener{
 	
 	@EventHandler
 	public void onMailboxBreak(BlockBreakEvent e) {
-		if(e.getBlock().getType() == Material.valueOf("SNAILMAIL_SNAIL_BOX")) {
-			if(e.getPlayer().hasPermission("civ.removemailbox")) {
-				e.getPlayer().sendMessage(ChatColor.RED + "" + ChatColor.UNDERLINE + "LET OP! HAAL OOK DE MAILBOX UIT DE CONFIG MET /removebox [username]");
-			}else {
-				e.setCancelled(true);
-			}
-		}
 		if(!e.getPlayer().hasPermission("civ.creative")) {
 			if(e.getPlayer().getGameMode() != GameMode.CREATIVE) {
 				return;
@@ -242,24 +346,6 @@ public class EventSystem implements Listener{
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
-	@EventHandler
-	public void userJoin(PlayerJoinEvent e) {
-		if(e.getPlayer().getName().equalsIgnoreCase("boykev")) {
-			if(e.getPlayer().getMaxHealth() < 45) {
-				e.getPlayer().setMaxHealth(e.getPlayer().getMaxHealth() + 5);
-				e.getPlayer().setHealth(e.getPlayer().getMaxHealth());
-				return;
-			}
-		}
-		if(e.getPlayer().getName().equalsIgnoreCase("coenispro")) {
-			if(e.getPlayer().getMaxHealth() < 45) {
-				e.getPlayer().setMaxHealth(e.getPlayer().getMaxHealth() + 5);
-				e.getPlayer().setHealth(e.getPlayer().getMaxHealth());
-				return;
-			}
-		}
-	}
 	
 	@SuppressWarnings("unchecked")
 	@EventHandler
@@ -285,8 +371,9 @@ public class EventSystem implements Listener{
 	
 			        // Maak het JSON object
 			        JSONObject jsonParam = new JSONObject();
-			        jsonParam.put("title", "Gamemode changed | Server: Civilization");
+			        jsonParam.put("title", "Gamemode changed | Server: Civilization Survival");
 			        jsonParam.put("channelid", "1166051676818518127");
+			        jsonParam.put("serverid", "557672774471254017");
 			        jsonParam.put("message", e.getPlayer().getName() + " changed gamemode to " + e.getNewGameMode().toString()); // Je moet een methode hebben die een willekeurige string genereert
 			        
 			        // Schrijf de data naar de output stream

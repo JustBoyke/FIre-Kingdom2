@@ -11,6 +11,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
@@ -20,12 +21,12 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import com.gufli.kingdomcraft.api.KingdomCraft;
 import com.gufli.kingdomcraft.api.KingdomCraftProvider;
-import com.gufli.kingdomcraft.api.domain.Kingdom;
 import com.gufli.kingdomcraft.api.domain.Rank;
 import com.gufli.kingdomcraft.api.domain.User;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import me.arcaniax.hdb.api.HeadDatabaseAPI;
 import me.codedred.playtimes.api.TimelessPlayer;
 
 public class KoningenSysteem implements Listener, CommandExecutor {
@@ -68,13 +69,14 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 	    return roundedPlaytimeInHours;
 	}
 	
-    public static ItemStack createCivilizationItem(String name, boolean bordersClosed, OfflinePlayer p) {
-        ItemStack item = new ItemStack(Material.PLAYER_HEAD);
+    public static ItemStack createCivilizationItem(String name, boolean bordersClosed, String playerName) {
+    	HeadDatabaseAPI hapi = new HeadDatabaseAPI();
+        ItemStack item = hapi.getItemHead(playerName);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
         meta.setDisplayName(ChatColor.BLUE + name);
 
         // Replace "coenispro" with the appropriate player name for each civilization
-        meta.setOwningPlayer(p);
+        
 
         List<String> lore = new ArrayList<String>();
 
@@ -120,7 +122,6 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 	
 	public static HashMap<Player, Integer> invite = new HashMap<Player, Integer>();
 	
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		Player p = (Player) sender;
@@ -297,171 +298,6 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 			
 			
 		}
-		if(cmd.getName().equalsIgnoreCase("online")) {
-			if(!p.hasPermission("civ.online")) {
-				p.sendMessage(ChatColor.RED + "Im sorry, you don`t have the permissions for this command!");
-				return false;
-			}
-			Kingdom solaria = kdc.getKingdom("Solaria");
-			int solariaonline = 0;
-			Kingdom entrava = kdc.getKingdom("Entrava");
-			int entravaonline = 0;
-			Kingdom sparta = kdc.getKingdom("Sparta");
-			int spartaonline = 0;
-			Kingdom ladier = kdc.getKingdom("Ladier");
-			int ladieronline = 0;
-			Kingdom ridderhof = kdc.getKingdom("Ridderhof");
-			int ridderhofonline = 0;
-			
-			for(Player pl : Bukkit.getOnlinePlayers()) {
-				User ku = kdc.getOnlineUser(pl.getName());
-				if(ku.getKingdom().getName().equalsIgnoreCase(solaria.getName())) {
-					solariaonline = solariaonline +1;
-				}
-				if(ku.getKingdom().getName().equalsIgnoreCase(entrava.getName())) {
-					entravaonline = entravaonline +1;
-				}
-				if(ku.getKingdom().getName().equalsIgnoreCase(sparta.getName())) {
-					spartaonline = spartaonline +1;
-				}
-				if(ku.getKingdom().getName().equalsIgnoreCase(ladier.getName())) {
-					ladieronline = ladieronline +1;
-				}
-				if(ku.getKingdom().getName().equalsIgnoreCase(ridderhof.getName())) {
-					ridderhofonline = ridderhofonline +1;
-				}
-			}
-			
-			int solmembers = solaria.getMemberCount() + 2;
-			
-//			int solcalc = solmembers / 2;
-			int entrcalc = entrava.getMemberCount() / 2;
-			int spacalc = sparta.getMemberCount() / 2;
-			int ladcalc = ladier.getMemberCount() / 2;
-			int ridcalc = ridderhof.getMemberCount() / 2;
-			
-//			int solwarcalc = solaria.getMaxMembers() - 2;
-			
-			//Solaria Item creation
-			ItemStack sol = new ItemStack(Material.PLAYER_HEAD);
-			SkullMeta solim = (SkullMeta) sol.getItemMeta();
-			OfflinePlayer solp = Bukkit.getOfflinePlayer("coenispro");
-			solim.setOwner(solp.getName());
-			solim.setDisplayName(ChatColor.GOLD + "Civilization " + ChatColor.translateAlternateColorCodes('&', solaria.getDisplay()));
-			List<String> sollore = new ArrayList<String>();
-			sollore.add(ChatColor.GREEN + "King: " + ChatColor.GOLD + solp.getName());
-			sollore.add(ChatColor.GREEN + "Members: " + ChatColor.GOLD + solmembers);
-			if(solariaonline >= 5) {
-				sollore.add(ChatColor.LIGHT_PURPLE + "Trolling allowed");
-			}else {
-				sollore.add(ChatColor.GRAY + "Trolling prohibited");
-			}
-			if(solariaonline > 5) {
-		    	sollore.add(ChatColor.LIGHT_PURPLE + "War allowed");
-		    }else {
-		    	sollore.add(ChatColor.GRAY + "War prohibited");
-		    }
-			solim.setLore(sollore);
-			sol.setItemMeta(solim);
-			//end of item creation for solaria
-			
-		    // Entrava Item creation
-		    ItemStack ent = new ItemStack(Material.PLAYER_HEAD);
-		    SkullMeta entim = (SkullMeta) ent.getItemMeta();
-		    OfflinePlayer entp = Bukkit.getOfflinePlayer("Murrunnn");
-		    entim.setOwner(entp.getName());
-		    entim.setDisplayName(ChatColor.GOLD + "Civilization " + ChatColor.translateAlternateColorCodes('&', entrava.getDisplay()));
-		    List<String> entlore = new ArrayList<String>();
-		    entlore.add(ChatColor.GREEN + "King: " + ChatColor.GOLD + entp.getName());
-		    entlore.add(ChatColor.GREEN + "Members: " + ChatColor.GOLD + entrava.getMemberCount());
-		    if(entravaonline >= entrcalc) {
-		    	entlore.add(ChatColor.LIGHT_PURPLE + "Trolling allowed");
-			}else {
-				entlore.add(ChatColor.GRAY + "Trolling prohibited");
-			}
-		    if(entravaonline > entrcalc) {
-		    	entlore.add(ChatColor.LIGHT_PURPLE + "War allowed");
-		    }else {
-		    	entlore.add(ChatColor.GRAY + "War prohibited");
-		    }
-		    entim.setLore(entlore);
-		    ent.setItemMeta(entim);
-		    
-		    // Sparta Item creation
-		    ItemStack spa = new ItemStack(Material.PLAYER_HEAD);
-		    SkullMeta spaim = (SkullMeta) spa.getItemMeta();
-		    OfflinePlayer spap = Bukkit.getOfflinePlayer("BARACOS123456789");
-		    spaim.setOwner(spap.getName());
-		    spaim.setDisplayName(ChatColor.GOLD + "Civilization " + ChatColor.translateAlternateColorCodes('&', sparta.getDisplay()));
-		    List<String> spalore = new ArrayList<String>();
-		    spalore.add(ChatColor.GREEN + "King: " + ChatColor.GOLD + spap.getName());
-		    spalore.add(ChatColor.GREEN + "Members: " + ChatColor.GOLD + sparta.getMemberCount());
-		    if(spartaonline >= spacalc) {
-		    	spalore.add(ChatColor.LIGHT_PURPLE + "Trolling allowed");
-			}else {
-				spalore.add(ChatColor.GRAY + "Trolling prohibited");
-			}
-		    if(spartaonline > spacalc) {
-		    	spalore.add(ChatColor.LIGHT_PURPLE + "War allowed");
-		    }else {
-		    	spalore.add(ChatColor.GRAY + "War prohibited");
-		    }
-		    spaim.setLore(spalore);
-		    spa.setItemMeta(spaim);
-		    
-		    // Ladier Item creation
-		    ItemStack lad = new ItemStack(Material.PLAYER_HEAD);
-		    SkullMeta ladim = (SkullMeta) lad.getItemMeta();
-		    OfflinePlayer ladp = Bukkit.getOfflinePlayer("DeathStep1");
-		    ladim.setOwner(ladp.getName());
-		    ladim.setDisplayName(ChatColor.GOLD + "Civilization " + ChatColor.translateAlternateColorCodes('&', ladier.getDisplay()));
-		    List<String> ladlore = new ArrayList<String>();
-		    ladlore.add(ChatColor.GREEN + "King: " + ChatColor.GOLD + ladp.getName());
-		    ladlore.add(ChatColor.GREEN + "Members: " + ChatColor.GOLD + ladier.getMemberCount());
-		    if(ladieronline >= ladcalc) {
-		    	ladlore.add(ChatColor.LIGHT_PURPLE + "Trolling allowed");
-			}else {
-				ladlore.add(ChatColor.GRAY + "Trolling prohibited");
-			}
-		    if(ladieronline > ladcalc) {
-		    	ladlore.add(ChatColor.LIGHT_PURPLE + "War allowed");
-		    }else {
-		    	ladlore.add(ChatColor.GRAY + "War prohibited");
-		    }
-		    ladim.setLore(ladlore);
-		    lad.setItemMeta(ladim);
-		    
-		    // Ridderhof Item creation
-		    ItemStack rid = new ItemStack(Material.PLAYER_HEAD);
-		    SkullMeta ridim = (SkullMeta) rid.getItemMeta();
-		    OfflinePlayer ridp = Bukkit.getOfflinePlayer("OfficialJoemp");
-		    ridim.setDisplayName(ChatColor.GOLD + "Civilization " + ChatColor.translateAlternateColorCodes('&', ridderhof.getDisplay()));
-		    ridim.setOwner(ridp.getName());
-		    List<String> ridlore = new ArrayList<String>();
-		    ridlore.add(ChatColor.GREEN + "King: " + ChatColor.GOLD + ridp.getName());
-		    ridlore.add(ChatColor.GREEN + "Members: " + ChatColor.GOLD + ridderhof.getMemberCount());
-		    if(ridderhofonline >= ridcalc) {
-		    	ridlore.add(ChatColor.LIGHT_PURPLE + "Trolling allowed");
-			}else {
-				ridlore.add(ChatColor.GRAY + "Trolling prohibited");
-			}
-		    if(ridderhofonline > ridcalc) {
-		    	ridlore.add(ChatColor.LIGHT_PURPLE + "War allowed");
-		    }else {
-		    	ridlore.add(ChatColor.GRAY + "War prohibited");
-		    }
-		    ridim.setLore(ridlore);
-		    rid.setItemMeta(ridim);
-		    
-		    Inventory mainmenu = makeInv(p, ChatColor.RED + "Civilization Onlinemenu", 9);
-		    mainmenu.setItem(0, sol);
-		    mainmenu.setItem(1, ent);
-		    mainmenu.setItem(2, spa);
-		    mainmenu.setItem(3, lad);
-		    mainmenu.setItem(4, rid);
-		    p.openInventory(mainmenu);
-			
-		}
 		if(cmd.getName().equalsIgnoreCase("borders")) {
 			cm = new ConfigManager(instance);
 			
@@ -512,24 +348,33 @@ public class KoningenSysteem implements Listener, CommandExecutor {
 				}
 				return false;
 			}else {
-				boolean solaria = cm.getConfig().getBoolean("border.solaria") || false;
-				boolean entrava = cm.getConfig().getBoolean("border.entrava") || false;
-				boolean sparta = cm.getConfig().getBoolean("border.sparta") || false;
-				boolean ridderhof = cm.getConfig().getBoolean("border.ridderhof") || false;
-				boolean ladier = cm.getConfig().getBoolean("border.ladier") || false;
-				
-				ItemStack solariaItem = createCivilizationItem("Solaria", solaria, Bukkit.getOfflinePlayer("coenispro"));
-				ItemStack entravaItem = createCivilizationItem("Entrava", entrava, Bukkit.getOfflinePlayer("Murrunnn"));
-				ItemStack spartaItem = createCivilizationItem("Sparta", sparta, Bukkit.getOfflinePlayer("BARACOS123456789"));
-		        ItemStack ridderhofItem = createCivilizationItem("Ridderhof", ridderhof, Bukkit.getOfflinePlayer("officialjoemp"));
-		        ItemStack ladierItem = createCivilizationItem("Ladier", ladier, Bukkit.getOfflinePlayer("deathstep1"));
-		        
-		        Inventory menu = makeInv(p, ChatColor.RED + "Civilization Border State", 9);
-		        menu.setItem(0, solariaItem);
-		        menu.setItem(1, entravaItem);
-		        menu.setItem(2, spartaItem);
-		        menu.setItem(3, ridderhofItem);
-		        menu.setItem(4, ladierItem);
+				Inventory menu = makeInv(p, ChatColor.RED + "Civilization Border State", 18);
+				@SuppressWarnings("unused")
+				HeadDatabaseAPI hapi = new HeadDatabaseAPI();
+
+				// Assuming cm.getConfig() returns the configuration object
+				ConfigurationSection bordersConfig = cm.getConfig().getConfigurationSection("border");
+
+				int slot = 0; // Initialize the slot to 0
+
+				for (String kingdom : bordersConfig.getKeys(false)) {
+				    boolean kingdomEnabled = bordersConfig.getBoolean(kingdom, false);
+				    String playerName = kingdomEnabled ? "48480" : "48481";
+				    
+				    ItemStack kingdomItem = createCivilizationItem(kingdom, kingdomEnabled, playerName);
+
+				    // Add the ItemStack to the menu at the current slot
+				    menu.setItem(slot, kingdomItem);
+
+				    // Increment the slot for the next kingdom
+				    slot++;
+
+				    // You may want to add a check to prevent going beyond the menu size
+				    if (slot >= 18) {
+				        break;
+				    }
+				}
+
 				p.openInventory(menu);
 				return false;
 			}

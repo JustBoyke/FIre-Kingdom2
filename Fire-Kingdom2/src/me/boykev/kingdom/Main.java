@@ -61,6 +61,26 @@ public class Main extends JavaPlugin implements Listener {
 	public HashMap<Player, Boolean> nover = new HashMap<Player, Boolean>();
 	private LicenseCheck lc;
 	private PlaceholderAPI pl;
+	
+	public ArrayList<Material> signs = new ArrayList<Material>();
+	public void initSigns() {
+		signs.add(Material.ACACIA_SIGN);
+		signs.add(Material.ACACIA_WALL_SIGN);
+		signs.add(Material.BIRCH_SIGN);
+		signs.add(Material.BIRCH_WALL_SIGN);
+		signs.add(Material.DARK_OAK_SIGN);
+		signs.add(Material.DARK_OAK_WALL_SIGN);
+		signs.add(Material.JUNGLE_SIGN);
+		signs.add(Material.JUNGLE_WALL_SIGN);
+		signs.add(Material.OAK_SIGN);
+		signs.add(Material.OAK_WALL_SIGN);
+		signs.add(Material.SPRUCE_SIGN);
+		signs.add(Material.SPRUCE_WALL_SIGN);
+		signs.add(Material.CRIMSON_SIGN);
+		signs.add(Material.CRIMSON_WALL_SIGN);
+		signs.add(Material.WARPED_SIGN);
+		signs.add(Material.WARPED_WALL_SIGN);
+	}
 
 	
 	@Override
@@ -122,6 +142,9 @@ public class Main extends JavaPlugin implements Listener {
     	getCommand("civ-create").setExecutor(new CommandManager(this));
     	getCommand("cpitem").setExecutor(new CommandManager(this));
     	getCommand("civcheck").setExecutor(new CommandManager(this));
+    	getCommand("poef").setExecutor(new CommandManager(this));
+    	getCommand("poef2").setExecutor(new CommandManager(this));
+    	getCommand("goatclear").setExecutor(new CommandManager(this));
     	getCommand("civadmin").setExecutor(new KoningenSysteem(this));
     	getCommand("civinvite").setExecutor(new KoningenSysteem(this));
     	getCommand("civsethome").setExecutor(new KoningenSysteem(this));
@@ -130,6 +153,8 @@ public class Main extends JavaPlugin implements Listener {
     	getCommand("online").setExecutor(new KoningenSysteem(this));
     	getCommand("borders").setExecutor(new KoningenSysteem(this));
     	getCommand("rulemanager-accept").setExecutor(new CheckRules(this));
+    	initSigns();
+    	
     	
     	new BukkitRunnable() {
 

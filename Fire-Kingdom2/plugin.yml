@@ -48,3 +48,9 @@ commands:
     description: Main base command.
   borders:
     description: Main base command.
+  poef:
+    description: Main base command.
+  poef2:
+    description: Main base command.
+  goatclear:
+    description: Main base command.

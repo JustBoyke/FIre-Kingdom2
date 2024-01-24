@@ -1,12 +1,16 @@
 package me.boykev.kingdom;
 
 import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Goat;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -148,9 +152,11 @@ public class CommandManager implements CommandExecutor {
 
 				@Override
 				public void run() {
+					p.sendMessage(ChatColor.YELLOW + "We are still working on creating your civilization, please wait a little longer!");
 					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "civ edit invite-only " + kingdom_name + " true");
 					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "civ edit display " + kingdom_name + " " + color + kingdom_name);
 					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "civ setkingdom " + p.getName() + " " + kingdom_name);
+					Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), "civ edit prefix &7[" + kingdom_name + " " + color + kingdom_name+ "&7]");
 					cm = new ConfigManager(instance);
 					cm.editConfig().set("power." + kingdom_name, 1);
 					cm.save();
@@ -173,6 +179,93 @@ public class CommandManager implements CommandExecutor {
 				
 			}.runTaskLater(instance, 90);
 			return false;
+		}
+		if(cmd.getName().equalsIgnoreCase("poef")) {
+			if(!p.hasPermission("poef.weg")) {
+				p.sendMessage(ChatColor.RED + "Nee");
+				return false;
+			}
+			if(args.length < 0) {
+				p.sendMessage(ChatColor.RED + "/poef [username]");
+				return false;
+			}
+			if(Bukkit.getPlayer(args[0]) == null) {
+				p.sendMessage(ChatColor.RED + "Speler niet online!");
+				return false;
+			}
+			Player tg = Bukkit.getPlayer(args[0]);
+			if(!(tg.getInventory().getChestplate().getType() == Material.ELYTRA)) {
+				p.sendMessage(ChatColor.RED + "Player heeft geen elytra maar een " + tg.getInventory().getChestplate().getType());
+				return false;
+			}
+			tg.getInventory().getChestplate().setDurability((short) 432);
+			tg.updateInventory();
+			p.sendMessage(ChatColor.RED + "Eltra is broken!");
+			return false;
+		}
+		if (cmd.getName().equalsIgnoreCase("poef2")) {
+		    if (!p.hasPermission("poef.weg")) {
+		        p.sendMessage(ChatColor.RED + "Nee");
+		        return false;
+		    }
+		    if (args.length < 1) { // Check if there is at least one argument (username)
+		        p.sendMessage(ChatColor.RED + "/poef [username]");
+		        return false;
+		    }
+		    if (Bukkit.getPlayer(args[0]) == null) {
+		        p.sendMessage(ChatColor.RED + "Speler niet online!");
+		        return false;
+		    }
+		    
+		    Player tg = Bukkit.getPlayer(args[0]);
+		    
+		    for (int slotNumber = 0; slotNumber < tg.getInventory().getSize(); slotNumber++) {
+		        ItemStack item = tg.getInventory().getItem(slotNumber);
+		        
+		        if (item != null && item.getType().getMaxDurability() > 0) {
+		            // Check if the item has durability and set its durability to the maximum value to break it
+		            item.setDurability(item.getType().getMaxDurability());
+		        }
+		    }
+		    
+		    tg.updateInventory();
+		    p.sendMessage(ChatColor.RED + "Alle breekbare items zijn gebroken!");
+		    return false;
+		}
+		if (cmd.getName().equalsIgnoreCase("goatclear")) {
+		    if (!p.hasPermission("goatclear.use")) {
+		        p.sendMessage(ChatColor.RED + "You do not have permission to use this command.");
+		        return true;
+		    }
+		    if (args.length < 1) {
+		        p.sendMessage(ChatColor.RED + "Usage: /goatclear <radius>");
+		        return true;
+		    }
+
+		    int radius;
+		    try {
+		        radius = Integer.parseInt(args[0]);
+		    } catch (NumberFormatException e) {
+		        p.sendMessage(ChatColor.RED + "Please enter a valid number for the radius.");
+		        return true;
+		    }
+
+		    World world = p.getWorld();
+		    Location playerLoc = p.getLocation();
+		    int clearedCount = 0;
+
+		    for (Entity entity : world.getNearbyEntities(playerLoc, radius, radius, radius)) {
+		        if (entity instanceof Goat) {
+		            Goat goat = (Goat) entity;
+		            if (!goat.hasLeftHorn() && !goat.hasRightHorn()) { // Check if the goat has no horns
+		                goat.remove();
+		                clearedCount++;
+		            }
+		        }
+		    }
+
+		    p.sendMessage(ChatColor.GREEN + "Cleared " + clearedCount + " hornless goats.");
+		    return true;
 		}
 		if(cmd.getName().equalsIgnoreCase("civspawn")) {
 			if(ku.getKingdom() == null) {

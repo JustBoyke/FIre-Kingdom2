@@ -2,6 +2,7 @@ package me.boykev.kingdom;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.UUID;
@@ -510,6 +511,31 @@ public class CommandManager implements CommandExecutor {
 		        
 		        return true;
 		    }
+		}
+		if(cmd.getName().equalsIgnoreCase("update-exchange")) {
+			if(!p.hasPermission("exchange.update")) {
+				p.sendMessage(ChatColor.RED + "Je hebt geen perms voor dit commando!");
+				return false;
+			}
+			mySQLDatabase.connect();
+		    Connection connection = mySQLDatabase.getConnection();
+		    
+		    if (connection != null) {
+		        String query = "SELECT * FROM bankingexchange";
+		        
+		        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {		            
+		            ResultSet resultSet = preparedStatement.executeQuery();
+		            
+		            while (resultSet.next()) {
+		                String signlink = resultSet.getString("signlink");
+		                Double value = resultSet.getDouble("value");
+		                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "var edit " + signlink + " set " + "&o" + value + "€");
+		            }
+		        } catch (SQLException e) {
+		            e.printStackTrace();
+		        }
+		    }
+		    mySQLDatabase.disconnect();
 		}
 		
 		return false;

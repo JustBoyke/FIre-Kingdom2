@@ -111,13 +111,94 @@ public class EventSystem implements Listener{
 	    return name;
 	}
 	
+	public String getBalance(UUID accountID) {
+	    mySQLDatabase.connect();
+	    Connection connection = mySQLDatabase.getConnection();
+	    String name = null;
+
+	    if (connection != null) {
+	        String query = "SELECT balance FROM bank_names WHERE bank_account_uuid=?";
+
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, accountID.toString());
+
+	            ResultSet resultSet = preparedStatement.executeQuery();
+	            if (resultSet.next()) {
+	                name = resultSet.getString("balance");
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    mySQLDatabase.disconnect();
+	    return name;
+	}
+	public Integer getBankType(UUID accountID) {
+	    mySQLDatabase.connect();
+	    Connection connection = mySQLDatabase.getConnection();
+	    Integer name = null;
+
+	    if (connection != null) {
+	        String query = "SELECT type FROM bank_names WHERE bank_account_uuid=?";
+
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, accountID.toString());
+
+	            ResultSet resultSet = preparedStatement.executeQuery();
+	            if (resultSet.next()) {
+	                name = resultSet.getInt("type");
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    mySQLDatabase.disconnect();
+	    return name;
+	}
+	public Double getItemValue(Material item) {
+	    mySQLDatabase.connect();
+	    Connection connection = mySQLDatabase.getConnection();
+	    Double name = null;
+
+	    if (connection != null) {
+	        String query = "SELECT value FROM bankingexchange WHERE item_name=?";
+
+	        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+	            preparedStatement.setString(1, item.toString().toLowerCase());
+
+	            ResultSet resultSet = preparedStatement.executeQuery();
+	            if (resultSet.next()) {
+	                name = resultSet.getDouble("value");
+	            }
+
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    mySQLDatabase.disconnect();
+	    return name;
+	}
+	
 	private ItemStack createBankAccountItem(UUID bankAccountUUID) {
 	    // Create an ItemStack representing the bank account
-	    ItemStack itemStack = new ItemStack(Material.CHEST); // Use an appropriate material
 	    String name = this.getAccountName(bankAccountUUID);
-	    
+	    Integer type = this.getBankType(bankAccountUUID);
+	    ItemStack itemStack = null;
+	    if(type == 0) {
+	    	itemStack = new ItemStack(Material.ENDER_CHEST); // Use an appropriate material
+	    }else {
+	    	itemStack = new ItemStack(Material.CHEST); // Use an appropriate material
+	    }
 	    ItemMeta itemMeta = itemStack.getItemMeta();
 	    itemMeta.setDisplayName(ChatColor.GOLD + "Account: " + ChatColor.GRAY + name); // Set an appropriate display name
+	    List<String> lore = new ArrayList<String>();
+	    lore.add(ChatColor.GRAY + "Balance: " + ChatColor.GOLD + this.getBalance(bankAccountUUID));
+	    itemMeta.setLore(lore);
 	    
 	    // You can also add lore or other information to the item meta if needed
 	    
@@ -125,6 +206,31 @@ public class EventSystem implements Listener{
 	    NBTItem nbti = new NBTItem(itemStack);
 	    
 	    nbti.setString("uuid", bankAccountUUID.toString());	    
+	    return nbti.getItem();
+	}
+	private ItemStack createAccountItem(Material mat, String name, Integer type) {
+	    // Create an ItemStack representing the bank account
+		ItemStack itemStack = new ItemStack(mat);
+	    ItemMeta itemMeta = itemStack.getItemMeta();
+	    itemMeta.setDisplayName(ChatColor.GOLD + name); // Set an appropriate display name
+	    List<String> lore = new ArrayList<String>();
+	    Double value = this.getItemValue(itemStack.getType());
+	    lore.add(ChatColor.GRAY + "Waarde: " + ChatColor.GOLD + value);
+	    if(type == 0) {
+	    	lore.add(ChatColor.GRAY + "Click to withdraw");
+	    }else if(type == 1) {
+	    	lore.add(ChatColor.GRAY + "Click to deposit");
+	    }else {
+	    	lore.add(ChatColor.GRAY + "Placeholder");
+	    }
+	    itemMeta.setLore(lore);
+	    
+	    // You can also add lore or other information to the item meta if needed
+	    
+	    itemStack.setItemMeta(itemMeta);
+	    NBTItem nbti = new NBTItem(itemStack);
+	    
+	    nbti.setDouble("waarde", value);   
 	    return nbti.getItem();
 	}
 	
@@ -141,6 +247,30 @@ public class EventSystem implements Listener{
 	    }
 	    
 	    p.openInventory(bankInventory);
+	}
+	
+	public void openBankAccount(Player p, UUID bankAccountUUID) {
+		String name = this.getAccountName(bankAccountUUID);
+		Inventory inv = Bukkit.createInventory(null, 18, ChatColor.GRAY + "Bank account: " + ChatColor.GREEN + name);
+		
+		inv.setItem(1, this.createAccountItem(Material.COPPER_INGOT, "0,05,-", 0));
+		inv.setItem(2, this.createAccountItem(Material.IRON_INGOT, "0,30,-", 0));
+		inv.setItem(3, this.createAccountItem(Material.GOLD_INGOT, "5,00,-", 0));
+		inv.setItem(4, this.createAccountItem(Material.AMETHYST_SHARD, "10,00,-", 0));
+		inv.setItem(5, this.createAccountItem(Material.DIAMOND, "150,00,-", 0));
+		inv.setItem(6, this.createAccountItem(Material.EMERALD, "150,00,-", 0));
+		inv.setItem(7, this.createAccountItem(Material.NETHERITE_INGOT, "500,00,-", 0));
+		
+		inv.setItem(10, this.createAccountItem(Material.COPPER_INGOT, "0,05,-", 1));
+		inv.setItem(11, this.createAccountItem(Material.IRON_INGOT, "0,30,-", 1));
+		inv.setItem(12, this.createAccountItem(Material.GOLD_INGOT, "5,00,-", 1));
+		inv.setItem(13, this.createAccountItem(Material.AMETHYST_SHARD, "10,00,-", 1));
+		inv.setItem(14, this.createAccountItem(Material.DIAMOND, "150,00,-", 1));
+		inv.setItem(15, this.createAccountItem(Material.EMERALD, "150,00,-", 1));
+		inv.setItem(16, this.createAccountItem(Material.NETHERITE_INGOT, "500,00,-", 1));
+		
+		
+		p.openInventory(inv);
 	}
 
 	
@@ -295,11 +425,14 @@ public class EventSystem implements Listener{
 			if(item.getType() == Material.CHEST && e.getCurrentItem().getItemMeta().getDisplayName().startsWith(ChatColor.GOLD + "Account: ")) {
 				NBTItem nbti = new NBTItem(e.getCurrentItem());
 				String uuid = nbti.getString("uuid");
+				this.openBankAccount(p, UUID.fromString(uuid));
 				p.sendMessage(ChatColor.GREEN + "Je klikte op account met ID: " + ChatColor.GOLD + uuid);
-				p.closeInventory();
 				return;
 			}
 			return;
+		}
+		if(inv.getTitle().startsWith(ChatColor.GRAY + "Bank account: ")) {
+			e.setCancelled(true);
 		}
 		if(inv.getTitle().equals(ChatColor.RED + "Civilization Administrator")) {
 			e.setCancelled(true);

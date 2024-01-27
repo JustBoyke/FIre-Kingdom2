@@ -56,3 +56,5 @@ commands:
     description: Main base command.
   createaccount:
     description: Main base command.
+  update-exchange:
+    description: Main base command.

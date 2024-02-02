@@ -58,3 +58,5 @@ commands:
     description: Main base command.
   update-exchange:
     description: Main base command.
+  admininv:
+    description: Main base command.

@@ -14,6 +14,8 @@ import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Goat;
 import org.bukkit.entity.Player;
@@ -537,8 +539,68 @@ public class CommandManager implements CommandExecutor {
 		    }
 		    mySQLDatabase.disconnect();
 		}
-		
+		if(cmd.getName().equalsIgnoreCase("admininv")){
+			if(!p.hasPermission("inv.admin")) {
+				p.sendMessage(ChatColor.RED + "Permission not granted!");
+				return false;
+			}
+			cm = new ConfigManager(instance);
+			FileConfiguration config = cm.getConfig();
+			if (!(sender instanceof Player)) {
+	            sender.sendMessage(ChatColor.RED + "Only players can use this command.");
+	            return true;
+	        }
+
+	        Player player = (Player) sender;
+	        String playerName = player.getName();
+	        ConfigurationSection playerInventorySection = config.getConfigurationSection("admininventories." + playerName);
+
+	        if (playerInventorySection != null) {
+	            // Admin Inventory data exists, restore the inventory
+	            int inventorySize = player.getInventory().getSize();
+	            ItemStack[] savedInventory = new ItemStack[inventorySize];
+
+	            for (String slotStr : playerInventorySection.getKeys(false)) {
+	                int slot = Integer.parseInt(slotStr);
+	                ItemStack item = playerInventorySection.getItemStack(slotStr);
+
+	                if (item != null && slot >= 0 && slot < inventorySize) {
+	                    savedInventory[slot] = item;
+	                }
+	            }
+
+	            player.getInventory().setContents(savedInventory);
+	            player.updateInventory();
+	            player.sendMessage(ChatColor.GREEN + "Admin Inventory has been restored.");
+	            config.set("admininventories." + playerName, null); // Clear the saved inventory
+	        } else {
+	            // Admin Inventory data does not exist, save the inventory and clear it
+	            savePlayerInventory(player);
+	            player.getInventory().clear();
+	            player.updateInventory();
+	            player.sendMessage(ChatColor.GREEN + "Admin Inventory has been cleared.");
+	        }
+
+	        cm.save();
+	        return true;
+		}
 		return false;
 	}
+	
+    private void savePlayerInventory(Player player) {
+        String playerName = player.getName();
+        cm = new ConfigManager(instance);
+		FileConfiguration config = cm.getConfig();
+		int inventorySize = player.getInventory().getSize();
+        ItemStack[] playerInventory = player.getInventory().getContents();
+        ConfigurationSection playerInventorySection = config.createSection("admininventories." + playerName);
 
+        for (int i = 0; i < inventorySize; i++) {
+            ItemStack item = playerInventory[i];
+            if (item != null) {
+                playerInventorySection.set(String.valueOf(i), item);
+            }
+        }
+        cm.save();
+    }
 }

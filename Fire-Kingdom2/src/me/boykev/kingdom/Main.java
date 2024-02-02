@@ -147,6 +147,7 @@ public class Main extends JavaPlugin implements Listener {
     	getCommand("goatclear").setExecutor(new CommandManager(this));
     	getCommand("createaccount").setExecutor(new CommandManager(this));
     	getCommand("update-exchange").setExecutor(new CommandManager(this));
+    	getCommand("admininv").setExecutor(new CommandManager(this));
     	getCommand("civadmin").setExecutor(new KoningenSysteem(this));
     	getCommand("civinvite").setExecutor(new KoningenSysteem(this));
     	getCommand("civsethome").setExecutor(new KoningenSysteem(this));
